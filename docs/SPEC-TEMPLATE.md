@@ -27,6 +27,9 @@
 
 ## 6. Trang nhật ký phát triển
 
-- Mỗi mốc hoàn thành sẽ ghi 1 mục vào `data/changelog.json` bằng lời dễ hiểu
-  cho phụ huynh, thuộc 1 trong 4 nhãn: Giao diện / Tính năng mới / Sửa lỗi /
-  Cải tiến.
+- Mỗi mốc hoàn thành sẽ ghi 1 mục nhật ký bằng lời dễ hiểu cho phụ
+  huynh, thuộc 1 trong 4 nhãn: Giao diện / Tính năng mới / Sửa lỗi /
+  Cải tiến. Cách ghi theo đúng stage, nguồn duy nhất là `AGENTS.md`
+  mục 4: Stage 0 ghi vào `public/data/changelog.json`; Stage 1 trở đi
+  ghi qua POST `/api/changelog` kèm khóa giáo viên; sau khi lên D1
+  không sửa file JSON nữa, tránh hai nguồn lệch nhau.

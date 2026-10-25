@@ -1,24 +1,33 @@
 # Cloudflare Pages — khung sản phẩm học viên, đi dần từ tĩnh sang full-stack.
 #
 # Deploy qua Dashboard: Framework preset None, Build command để trống,
-# Build output directory là thư mục gốc (xem docs/setup-windows.md bước 10).
+# Build output directory là "public" (xem docs/setup-windows.md phần Deploy).
+# Chỉ thư mục public/ mới thành trang web công khai — docs/, migrations/,
+# scripts/ và AGENTS.md KHÔNG bị publish thành đường link.
 #
-# Deploy qua CLI: npx wrangler pages deploy . --project-name khung-san-pham-hoc-vien
+# Deploy qua CLI (điền tên project Pages thật của nhóm):
+#   npx --yes wrangler pages deploy public --project-name <ten-project-cua-nhom>
+#
+# Tên project Pages: mặc định là tên khung mẫu. Trước khi deploy bằng
+# CLI mà không kèm --project-name, đổi tên này thành tên project Pages
+# thật của nhóm (xem README mục đổi tên). Deploy qua Dashboard không
+# dùng tên này mà dùng tên project con đã tạo trên Dashboard.
 name = "khung-san-pham-hoc-vien"
-pages_build_output_dir = "."
+pages_build_output_dir = "public"
 compatibility_date = "2026-10-25"
 
 # --- Database D1 (Stage 1 trở đi) ---
-# Tạo database rồi dán database_id thật vào đây:
-#   npx wrangler d1 create khung-san-pham-hoc-vien
-# Chưa điền database_id thì trang vẫn chạy bằng data/changelog.json (Stage 0);
-# đừng cố deploy Functions khi database_id còn là TO-FILL.
+# Tạo database rồi dán database_id và database_name thật vào đây:
+#   npx --yes wrangler d1 create khung-<ten-nhom>
+# Chưa điền database_id thì trang vẫn chạy bằng public/data/changelog.json
+# (Stage 0); đừng cố deploy Functions khi database_id còn là TO-FILL.
 [[d1_databases]]
 binding = "DB"
-database_name = "khung-san-pham-hoc-vien"
+database_name = "TO-FILL"
 database_id = "TO-FILL"
 
 # --- Khóa giáo viên (Stage 2) ---
 # TEACHER_KEY KHÔNG viết vào file này, không commit vào repo.
-# Đặt bằng lệnh (mỗi project Pages một lần):
-#   npx wrangler pages secret put TEACHER_KEY --project-name khung-san-pham-hoc-vien
+# Đặt bằng lệnh (mỗi project Pages một lần, giáo viên tự gõ trực tiếp
+# trên máy học viên — xem docs/setup-windows.md phần Stage 1/2):
+#   npx --yes wrangler pages secret put TEACHER_KEY --project-name <ten-project-cua-nhom>

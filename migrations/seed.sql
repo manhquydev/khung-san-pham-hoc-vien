@@ -1,5 +1,5 @@
 -- Dữ liệu VÍ DỤ cho bảng changelog — khớp với data/changelog.json (Stage 0).
--- Chạy: wrangler d1 execute DB --remote --file migrations/seed.sql
+-- Chạy: npx --yes wrangler d1 execute DB --remote --file migrations/seed.sql
 -- Khi nhóm đã có mục nhật ký thật đầu tiên, XÓA 3 dòng ví dụ này:
 --   DELETE FROM changelog WHERE tieu_de LIKE 'VÍ DỤ%';
 INSERT INTO changelog (ngay, tieu_de, mo_ta, loai, pr_url, created_at) VALUES

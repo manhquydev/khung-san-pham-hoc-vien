@@ -6,7 +6,7 @@
 //   cho dữ liệu quan trọng. Dữ liệu thật luôn cần review của giáo viên.
 //
 // D1 binding: DB (khai báo trong wrangler.toml). Khi chưa cấu hình D1,
-// GET trả 503 và trang nhat-ky.html tự dùng data/changelog.json (Stage 0).
+// GET trả 503 và trang nhat-ky.html tự dùng public/data/changelog.json (Stage 0).
 
 var CATEGORIES = ["Giao diện", "Tính năng mới", "Sửa lỗi", "Cải tiến"];
 
@@ -18,7 +18,31 @@ function jsonResponse(obj, status) {
 }
 
 function isValidDate(s) {
-  return typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s);
+  // Kiểm tra ngày thật trên lịch, không chỉ đúng dạng chữ:
+  // "2026-13-40" hay "2026-02-30" đúng dạng nhưng không phải ngày thật.
+  if (typeof s !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(s)) { return false; }
+  var parts = s.split("-");
+  var y = parseInt(parts[0], 10);
+  var m = parseInt(parts[1], 10);
+  var d = parseInt(parts[2], 10);
+  var dt = new Date(Date.UTC(y, m - 1, d));
+  return (
+    dt.getUTCFullYear() === y &&
+    dt.getUTCMonth() === m - 1 &&
+    dt.getUTCDate() === d
+  );
+}
+
+// So sánh khóa theo cách không để lộ độ dài khớp qua thời gian đo được
+// (cổng giữ lớp học, không phải hệ thống đăng nhập thật — xem cuối file).
+function keysEqual(a, b) {
+  if (typeof a !== "string" || typeof b !== "string") { return false; }
+  if (a.length !== b.length) { return false; }
+  var diff = 0;
+  for (var i = 0; i < a.length; i++) {
+    diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return diff === 0;
 }
 
 export async function onRequest(context) {
@@ -48,7 +72,8 @@ export async function onRequest(context) {
       });
       return jsonResponse(entries);
     } catch (err) {
-      return jsonResponse({ error: "Không đọc được database: " + err.message }, 500);
+      console.error("GET /api/changelog failed:", err);
+      return jsonResponse({ error: "Không đọc được database. Kiểm tra migration đã chạy chưa (xem docs/setup-windows.md phần Stage 1/2)." }, 500);
     }
   }
 
@@ -57,11 +82,11 @@ export async function onRequest(context) {
     // thì từ chối mọi lần ghi (fail-closed) thay vì mở ghi tự do.
     if (!env.TEACHER_KEY) {
       return jsonResponse(
-        { error: "Chưa cấu hình TEACHER_KEY (xem docs/setup-windows.md bước 9). Không nhận ghi mới." },
+        { error: "Chưa cấu hình TEACHER_KEY (xem docs/setup-windows.md phần Stage 1/2). Không nhận ghi mới." },
         503
       );
     }
-    if (request.headers.get("x-teacher-key") !== env.TEACHER_KEY) {
+    if (request.headers.get("x-teacher-key") === null || !keysEqual(request.headers.get("x-teacher-key"), env.TEACHER_KEY)) {
       return jsonResponse({ error: "Thiếu hoặc sai khóa giáo viên." }, 401);
     }
 
@@ -93,8 +118,8 @@ export async function onRequest(context) {
         400
       );
     }
-    if (pr_url !== null && typeof pr_url !== "string") {
-      return jsonResponse({ error: "pr_url phải là chuỗi hoặc null." }, 400);
+    if (pr_url !== null && (typeof pr_url !== "string" || pr_url.length > 500 || !/^https?:\/\//.test(pr_url))) {
+      return jsonResponse({ error: "pr_url phải là null hoặc đường link bắt đầu bằng http:// hoặc https://, tối đa 500 ký tự." }, 400);
     }
 
     try {
@@ -115,7 +140,8 @@ export async function onRequest(context) {
         201
       );
     } catch (err) {
-      return jsonResponse({ error: "Không ghi được vào database: " + err.message }, 500);
+      console.error("POST /api/changelog failed:", err);
+      return jsonResponse({ error: "Không ghi được vào database. Kiểm tra migration đã chạy chưa (xem docs/setup-windows.md phần Stage 1/2)." }, 500);
     }
   }
 

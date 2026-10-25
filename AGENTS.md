@@ -13,6 +13,11 @@
   → Deploy → Verify-live → Retro`.
 - Nếu máy đã cài skill flow, dùng đúng skill đó. Nếu chưa cài, làm theo bản rút gọn
   trong `docs/FLOW-GUIDE.md` — không tự bịa ra quy trình khác.
+- **Agent luôn nói rõ mình đang ở đâu:** đầu mỗi câu trả lời, ghi rõ stage
+  hiện tại và cổng vừa qua/chưa qua (ví dụ: "Đang ở stage Build, cổng Review
+  chưa qua vì chưa có preview"). Cuối mỗi thẻ việc, ghi tiến độ stage vào
+  phần "Nhìn lại" của thẻ để giáo viên kiểm tra được agent có chạy đúng
+  flow thật không — flow chạy ngầm mà không ai thấy thì coi như chưa chạy.
 - Không bao giờ làm tắt: không viết code trước khi có SPEC/card được duyệt, không
   coi "code chạy trên máy mình" là xong.
 
@@ -46,7 +51,7 @@
     `Cải tiến`.
   - `pr_url`: đường link tới PR đó, nếu có.
 - **Cách thêm mục tùy theo stage** (xem `docs/roadmap.md`):
-  - Stage 0 (chưa có D1): thêm vào `data/changelog.json`.
+  - Stage 0 (chưa có D1): thêm vào `public/data/changelog.json`.
   - Stage 1 trở đi: ghi qua API `POST /api/changelog` (kèm khóa giáo viên
     từ Stage 2). Trang nhật ký tự đọc từ D1 trước, chỉ khi API không dùng
     được mới dùng file JSON — nên đừng sửa file JSON nữa sau khi đã lên D1,
@@ -54,32 +59,35 @@
 - Checklist này nằm trong mẫu PR (`.github/pull_request_template.md`) và agent
   phải kiểm tra nó trước khi xin review. Thiếu mục nhật ký = PR chưa xong.
 
-## 8. Quy tắc database, secret và môi trường Windows
+## 5. Quy tắc database, secret và môi trường Windows
 
 - **Thay đổi database chỉ qua migration:** thêm/sửa bảng luôn bằng file
   migration mới (`migrations/0002_....sql`, ...), chạy
-  `wrangler d1 migrations apply DB --local` thử trước rồi mới `--remote`.
+  `npx --yes wrangler d1 migrations apply DB --local` thử trước rồi mới `--remote`.
   Không bao giờ sửa bảng trực tiếp trên Dashboard — sửa tay sẽ lệch với
   code trong repo và các bạn khác không chạy lại được.
 - **Secret không bao giờ commit:** `TEACHER_KEY` và mọi khóa khác chỉ đặt
-  bằng `wrangler pages secret put`, không viết vào `wrangler.toml`, code,
+  bằng `npx --yes wrangler pages secret put`, không viết vào `wrangler.toml`, code,
   hay chat. Khóa lộ thì báo ngay cho giáo viên đổi khóa.
 - **Học viên Windows dùng PowerShell:** mọi lệnh trong tài liệu đều viết
   cho PowerShell, đường dẫn dùng dấu `\`. Chạy file `.ps1` bằng
   `powershell -ExecutionPolicy Bypass -File ...` (xem
-  `docs/setup-windows.md` bước 4).
+  `docs/setup-windows.md`, phần chạy script kiểm tra).
 - **Dấu xuống dòng:** repo đã có `.gitattributes` (`* text=auto`) để Git
   tự đổi dấu xuống dòng cho đúng từng hệ điều hành — không tự sửa file
   này, không commit file với dấu xuống dòng lạ gây nhiễu diff.
 
-## 5. An toàn khóa và thông tin
+## 6. An toàn khóa và thông tin
 
 - TUYỆT ĐỐI không dán khóa, mật khẩu, token vào repo, slide, hay khung chat
   chung. Khóa chỉ nằm ở biến môi trường do giáo viên quản lý.
 - Không đưa thông tin cá nhân thật (số điện thoại, email, địa chỉ) vào repo.
   Chỉ dùng tên sản phẩm và tên nhóm dạng placeholder.
+- Không đưa tên thật, ảnh, tên trường/lớp của học viên lên trang web công
+  khai khi chưa có đồng ý của giáo viên và phụ huynh. Tên trên trang web
+  luôn là tên sản phẩm, không phải tên học viên.
 
-## 6. Cách làm việc với code
+## 7. Cách làm việc với code
 
 - Làm việc trên nhánh riêng (branch), mở PR, chờ review, rồi mới merge.
   Không bao giờ push thẳng lên nhánh `main`.
@@ -87,10 +95,12 @@
 - Trước khi xin review: tự kiểm tra preview mở được, trang nhật ký vẫn hiển thị
   đúng, không vỡ bố cục trên màn hình điện thoại.
 
-## 7. "Xong" nghĩa là gì
+## 8. "Xong" nghĩa là gì
 
 - "Xong" = có đường link preview/production mở được, đúng tiêu chí nghiệm thu
   của thẻ việc, và đã có mục nhật ký phát triển. Chỉ viết code xong mà chưa
   có link chạy được thì CHƯA xong.
 - Cuối mỗi buổi, agent cùng học viên ghi 1 dòng Retro ngắn: hôm nay học được
-  gì, còn vướng gì — lưu vào PR hoặc nhật ký buổi của nhóm.
+  gì, còn vướng gì — lưu vào PR hoặc nhật ký buổi của nhóm. Dòng Retro
+  phải ghi rõ stage vừa xong và cổng đã qua, để giáo viên thấy được tiến
+  độ flow (xem mục 1).

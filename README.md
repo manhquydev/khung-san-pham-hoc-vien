@@ -21,7 +21,8 @@ nhật ký phát triển.
 1. Vào Cloudflare Dashboard → Pages → Create application → Pages → Connect to Git.
 2. Chọn repo của học viên, bấm Begin setup.
 3. Framework preset: **None**. Build command: **để trống**. Build output
-   directory: **/** (thư mục gốc). Bấm Save and Deploy.
+   directory: **public** (chỉ thư mục `public/` mới thành trang web công
+   khai). Bấm Save and Deploy.
 4. Sau vài phút sẽ có đường link `*.pages.dev` — đó là "bằng chứng xong" cho
    mỗi mốc: link thật mở được, không chỉ chạy trên máy học viên.
 
@@ -32,9 +33,11 @@ nhật ký phát triển.
 
 ### Cài đặt lần đầu cho học viên Windows
 
-Học viên làm theo `docs/setup-windows.md` (cài Git, Node.js LTS, VS Code,
-đăng nhập wrangler, tạo D1, deploy, kiểm tra). Trước khi deploy, chạy
-script kiểm tra môi trường ở thư mục gốc của repo:
+Học viên làm theo `docs/setup-windows.md`: phần Lần đầu, Stage 0 (tài
+khoản, cài Git/Node.js/VS Code, clone repo, chạy script kiểm tra, đăng
+nhập wrangler, deploy, kiểm tra) rồi mới tới phần Stage 1/2 (tạo D1,
+migration, khóa giáo viên) khi lớp tới đó. Trước khi deploy, chạy script
+kiểm tra môi trường ở thư mục gốc của repo:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\check-env.ps1
@@ -42,7 +45,7 @@ powershell -ExecutionPolicy Bypass -File scripts\check-env.ps1
 
 Script báo PASS/FAIL từng mục kèm cách sửa; sửa xong chạy lại tới khi toàn
 PASS (trừ 2 mục Cloudflare login và D1 database_id sẽ PASS sau khi làm
-xong bước đăng nhập và tạo D1).
+xong bước đăng nhập và phần Stage 1/2).
 
 ### Lộ trình đi dần sang full-stack (Stage 0–2 đã có trong repo)
 
@@ -50,17 +53,21 @@ Khung v1 chỉ là trang tĩnh để học viên lên mạng được trong vài
 nâng cấp này đã đưa Stage 1 và Stage 2 vào repo (xem chi tiết, cách kiểm
 chứng từng stage và mức tốn hạn mức trong `docs/roadmap.md`):
 
-1. **Stage 0 — tĩnh + JSON:** trang đọc `data/changelog.json`. File JSON
-   này vẫn giữ lại làm dự phòng: khi chưa có D1, trang tự dùng nó.
+1. **Stage 0 — tĩnh + JSON:** trang đọc `public/data/changelog.json`.
+   File JSON này vẫn giữ lại làm dự phòng: khi chưa có D1, trang tự dùng nó.
 2. **Stage 1 — Functions đọc D1:** `functions/api/changelog.js` (GET) đọc
    bảng `changelog` từ D1; `functions/api/health.js` báo database đã cấu
    hình chưa. Trang nhật ký tự gọi API trước, chỉ khi API không dùng được
    mới dùng file JSON. Tạo bảng bằng migration, không sửa tay trên Dashboard.
 3. **Stage 2 — ghi qua API có khóa giáo viên:** POST `/api/changelog`
    cần header `x-teacher-key` khớp secret `TEACHER_KEY` (đặt bằng
-   `wrangler pages secret put`, không viết vào repo). Đây là cổng giữ lớp
+   `npx --yes wrangler pages secret put`, không viết vào repo). Đây là cổng giữ lớp
    học, **không phải hệ thống đăng nhập thật** — ai biết khóa đều ghi
-   được, nên khóa chỉ nằm ở giáo viên và mọi mục vẫn qua review PR.
+   được, nên khóa chỉ nằm ở giáo viên. Nói thẳng: POST ghi thẳng vào D1
+   production, không đi qua PR — nên ở Stage 2, giáo viên rà soát trang
+   nhật ký trực tiếp hằng tuần và xóa mục sai bằng lệnh DELETE (xem
+   `docs/roadmap.md` Stage 2), thay vì tưởng PR review vẫn đang giữ mục
+   nhật ký.
 4. **Stage 3–4 (sau này, chưa làm):** tính năng riêng từng sản phẩm, rồi
    tùy chọn R2 upload, KV cache, đăng nhập thật — xem `docs/roadmap.md`.
 
@@ -71,23 +78,32 @@ chứng từng stage và mức tốn hạn mức trong `docs/roadmap.md`):
   không tick hộ, không viết hộ SPEC/PRD.
 - **Làm thẻ việc (Cards → Verify): cổng tự qua khi kiểm chứng máy đạt**,
   và **giáo viên review PR là cổng người cuối cùng trước khi merge**.
-- Mọi PR đã merge đều phải có 1 mục trong `data/changelog.json` viết bằng lời
-  dễ hiểu cho phụ huynh (xem `AGENTS.md` mục 4).
+- Mọi PR đã merge đều phải có 1 mục nhật ký viết bằng lời dễ hiểu cho phụ
+  huynh (xem `AGENTS.md` mục 4 — cách ghi theo đúng stage: Stage 0 ghi
+  vào `public/data/changelog.json`; Stage 1 trở đi ghi qua POST
+  `/api/changelog` kèm khóa giáo viên; sau khi lên D1 không sửa file
+  JSON nữa).
 
 ## PHẦN DÀNH CHO HỌC VIÊN
 
 ### Bắt đầu
 
 1. Bấm **Use this template** để tạo repo riêng, rồi clone về máy.
-2. Học viên Windows làm theo `docs/setup-windows.md` từng bước (cài Git,
-   Node.js LTS, VS Code → chạy `scripts\check-env.ps1` → đăng nhập wrangler
-   → tạo D1 → deploy → mở `/nhat-ky` và `/api/health` kiểm tra).
-3. Đổi tên sản phẩm ở 2 chỗ:
-   - `index.html`: dòng `<title>` và dòng `<h1>[Tên sản phẩm]</h1>`.
-   - `nhat-ky.html`: dòng `<title>` (thay `[Tên sản phẩm]` bằng tên thật).
-4. Xóa 3 mục VÍ DỤ trong `data/changelog.json` và thay bằng mục thật đầu tiên
+2. Học viên Windows làm theo `docs/setup-windows.md` từng bước: phần Lần
+   đầu, Stage 0 (tài khoản → cài Git, Node.js LTS, VS Code → clone →
+   chạy `scripts\check-env.ps1` → đăng nhập wrangler → deploy → mở
+   `/nhat-ky` và `/api/health` kiểm tra). Phần Stage 1/2 (tạo D1,
+   migration, khóa giáo viên) chỉ làm khi giáo viên báo lớp tới đó.
+3. Đổi tên sản phẩm ở các chỗ sau (tên thật của SẢN PHẨM, không phải tên
+   thật của con):
+   - `public/index.html`: dòng `<title>` và dòng `<h1>[Tên sản phẩm]</h1>`.
+   - `public/nhat-ky.html`: dòng `<title>` (thay `[Tên sản phẩm]` bằng tên thật của sản phẩm).
+   - `wrangler.toml`: dòng `name` (đổi tên khung mẫu thành tên project
+     Pages thật của nhóm) — tên này cũng là tên dùng trong lệnh deploy
+     `--project-name` khi con không kèm cờ đó.
+4. Xóa 3 mục VÍ DỤ trong `public/data/changelog.json` và thay bằng mục thật đầu tiên
    của nhóm mình khi có mốc hoàn thành. Sau khi lên Stage 1 (D1), xóa 3 dòng
-   ví dụ trong database bằng lệnh trong `docs/setup-windows.md` bước 8.
+   ví dụ trong database bằng lệnh trong `docs/setup-windows.md` phần Stage 1/2.
 
 ### Nói gì với agent đầu tiên?
 

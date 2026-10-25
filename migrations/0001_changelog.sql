@@ -1,8 +1,8 @@
 -- Migration 0001: bảng nhật ký phát triển.
 -- Quy tắc: mọi thay đổi cấu trúc bảng chỉ qua file migration mới
 -- (0002_....sql, 0003_....sql, ...), KHÔNG sửa trực tiếp trên Dashboard.
--- Áp dụng: wrangler d1 migrations apply DB --local (thử trên máy)
--- rồi wrangler d1 migrations apply DB --remote (lên Cloudflare).
+-- Áp dụng: npx --yes wrangler d1 migrations apply DB --local (thử trên máy)
+-- rồi npx --yes wrangler d1 migrations apply DB --remote (lên Cloudflare).
 
 CREATE TABLE IF NOT EXISTS changelog (
   id INTEGER PRIMARY KEY,

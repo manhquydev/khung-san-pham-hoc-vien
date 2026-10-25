@@ -82,17 +82,17 @@ if ($null -ne $wranglerCmd) {
     $who = Get-CommandOutput $whoArgs
     $loggedIn = $who.Ok -and ($who.Output -match "logged in|Account|email")
     $whoDetail = if ($who.Output) { ($who.Output -split "`n")[0] } else { "" }
-    Write-Result $loggedIn "Cloudflare login" $whoDetail "Chay: npx wrangler login (trinh duyet se mo ra, dang nhap tai khoan Cloudflare MIEN PHI cua rieng con, khong can the)."
+    Write-Result $loggedIn "Cloudflare login" $whoDetail "Chay: npx --yes wrangler login (trinh duyet se mo ra, dang nhap tai khoan Cloudflare MIEN PHI cua rieng con, khong can the)."
 } else {
     Write-Result $false "Cloudflare login" "Bo qua vi wrangler chua chay duoc" "Sua muc Wrangler truoc roi chay lai script."
 }
 
 # 6. File bat buoc cua repo co mat khong
 $requiredFiles = @(
-    "index.html",
-    "nhat-ky.html",
-    "nhat-ky.js",
-    "data\changelog.json",
+    "public\index.html",
+    "public\nhat-ky.html",
+    "public\nhat-ky.js",
+    "public\data\changelog.json",
     "wrangler.toml",
     "AGENTS.md",
     "functions\api\changelog.js",
@@ -123,13 +123,13 @@ if (Test-Path "wrangler.toml") {
 } else {
     $dbDetail = "Khong tim thay wrangler.toml"
 }
-Write-Result $dbFilled "D1 database_id" $dbDetail "Chay: npx wrangler d1 create khung-san-pham-hoc-vien, copy database_id in ra roi dan vao wrangler.toml (xem docs/setup-windows.md buoc 7). O Stage 0 (chi trang tinh) muc nay FAIL la binh thuong — trang van chay bang data/changelog.json."
+Write-Result $dbFilled "D1 database_id" $dbDetail "Chay: npx --yes wrangler d1 create khung-<ten-nhom>, copy database_id in ra roi dan vao wrangler.toml (xem docs/setup-windows.md phan Stage 1/2). O Stage 0 (chi trang tinh) muc nay FAIL la binh thuong — trang van chay bang public/data/changelog.json."
 
 Write-Host ""
 if ($failCount -gt 0) {
     Write-Host "Ket qua: $failCount muc FAIL. Sua theo huong dan tren roi chay lai script." -ForegroundColor Red
     exit 1
 } else {
-    Write-Host "Ket qua: TOAN PASS. May cua con da san sang de deploy (xem docs/setup-windows.md buoc 10)." -ForegroundColor Green
+    Write-Host "Ket qua: TOAN PASS. May cua con da san sang de deploy (xem docs/setup-windows.md phan Deploy)." -ForegroundColor Green
     exit 0
 }
