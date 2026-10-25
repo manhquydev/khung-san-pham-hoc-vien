@@ -25,6 +25,45 @@ nhật ký phát triển.
 4. Sau vài phút sẽ có đường link `*.pages.dev` — đó là "bằng chứng xong" cho
    mỗi mốc: link thật mở được, không chỉ chạy trên máy học viên.
 
+> ⚠️ **Mỗi học viên dùng tài khoản Cloudflare miễn phí của riêng mình.**
+> Hạn mức tính theo tài khoản, không tính theo project — cả lớp dồn vào
+> một tài khoản sẽ dùng chung 100.000 request/ngày và 500 lượt build/tháng
+> (xem `docs/gioi-han-free.md`). Tài khoản giáo viên chỉ để demo.
+
+### Cài đặt lần đầu cho học viên Windows
+
+Học viên làm theo `docs/setup-windows.md` (cài Git, Node.js LTS, VS Code,
+đăng nhập wrangler, tạo D1, deploy, kiểm tra). Trước khi deploy, chạy
+script kiểm tra môi trường ở thư mục gốc của repo:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\check-env.ps1
+```
+
+Script báo PASS/FAIL từng mục kèm cách sửa; sửa xong chạy lại tới khi toàn
+PASS (trừ 2 mục Cloudflare login và D1 database_id sẽ PASS sau khi làm
+xong bước đăng nhập và tạo D1).
+
+### Lộ trình đi dần sang full-stack (Stage 0–2 đã có trong repo)
+
+Khung v1 chỉ là trang tĩnh để học viên lên mạng được trong vài phút. Bản
+nâng cấp này đã đưa Stage 1 và Stage 2 vào repo (xem chi tiết, cách kiểm
+chứng từng stage và mức tốn hạn mức trong `docs/roadmap.md`):
+
+1. **Stage 0 — tĩnh + JSON:** trang đọc `data/changelog.json`. File JSON
+   này vẫn giữ lại làm dự phòng: khi chưa có D1, trang tự dùng nó.
+2. **Stage 1 — Functions đọc D1:** `functions/api/changelog.js` (GET) đọc
+   bảng `changelog` từ D1; `functions/api/health.js` báo database đã cấu
+   hình chưa. Trang nhật ký tự gọi API trước, chỉ khi API không dùng được
+   mới dùng file JSON. Tạo bảng bằng migration, không sửa tay trên Dashboard.
+3. **Stage 2 — ghi qua API có khóa giáo viên:** POST `/api/changelog`
+   cần header `x-teacher-key` khớp secret `TEACHER_KEY` (đặt bằng
+   `wrangler pages secret put`, không viết vào repo). Đây là cổng giữ lớp
+   học, **không phải hệ thống đăng nhập thật** — ai biết khóa đều ghi
+   được, nên khóa chỉ nằm ở giáo viên và mọi mục vẫn qua review PR.
+4. **Stage 3–4 (sau này, chưa làm):** tính năng riêng từng sản phẩm, rồi
+   tùy chọn R2 upload, KV cache, đăng nhập thật — xem `docs/roadmap.md`.
+
 ### Quyết định về cổng kiểm chứng (đã chốt, đừng tự ý đổi)
 
 - **Khởi động (Idea → Contract): học viên phải tự xác nhận từng cổng.**
@@ -35,31 +74,20 @@ nhật ký phát triển.
 - Mọi PR đã merge đều phải có 1 mục trong `data/changelog.json` viết bằng lời
   dễ hiểu cho phụ huynh (xem `AGENTS.md` mục 4).
 
-### Lộ trình nâng cấp sau này (không làm ở bản khung v1)
-
-Bản khung v1 cố tình chỉ là trang tĩnh (HTML/CSS/JS, không cần build) để học
-viên đưa lên mạng được trong vài phút. Khi lớp đã vững, nâng cấp theo từng
-mốc sau — mỗi mốc là một bài học riêng, không dồn vào đầu khóa:
-
-1. **Mốc Functions:** thêm Cloudflare Functions cho phần cần chạy ở máy chủ
-   (ví dụ: nhận dữ liệu từ form). Trang tĩnh vẫn giữ nguyên.
-2. **Mốc D1:** tạo database D1, chuyển các mục nhật ký từ
-   `data/changelog.json` sang bảng `changelog` (cột: date, title, description,
-   category, pr_url). Trang `nhat-ky.html` đổi từ đọc file JSON sang gọi API
-   Functions đọc từ D1 — cách hiển thị theo ngày và lời dễ hiểu giữ nguyên.
-3. Sau mốc D1, việc thêm mục nhật ký vẫn giữ nguyên quy tắc: 1 PR = 1 mục,
-   lời dễ hiểu cho phụ huynh, qua review của giáo viên.
-
 ## PHẦN DÀNH CHO HỌC VIÊN
 
 ### Bắt đầu
 
 1. Bấm **Use this template** để tạo repo riêng, rồi clone về máy.
-2. Đổi tên sản phẩm ở 2 chỗ:
+2. Học viên Windows làm theo `docs/setup-windows.md` từng bước (cài Git,
+   Node.js LTS, VS Code → chạy `scripts\check-env.ps1` → đăng nhập wrangler
+   → tạo D1 → deploy → mở `/nhat-ky` và `/api/health` kiểm tra).
+3. Đổi tên sản phẩm ở 2 chỗ:
    - `index.html`: dòng `<title>` và dòng `<h1>[Tên sản phẩm]</h1>`.
    - `nhat-ky.html`: dòng `<title>` (thay `[Tên sản phẩm]` bằng tên thật).
-3. Xóa 3 mục VÍ DỤ trong `data/changelog.json` và thay bằng mục thật đầu tiên
-   của nhóm mình khi có mốc hoàn thành.
+4. Xóa 3 mục VÍ DỤ trong `data/changelog.json` và thay bằng mục thật đầu tiên
+   của nhóm mình khi có mốc hoàn thành. Sau khi lên Stage 1 (D1), xóa 3 dòng
+   ví dụ trong database bằng lệnh trong `docs/setup-windows.md` bước 8.
 
 ### Nói gì với agent đầu tiên?
 

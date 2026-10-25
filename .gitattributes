@@ -1,0 +1,4 @@
+# Học viên dùng Windows lẫn máy khác đều clone chung 1 repo.
+# Dòng này bắt Git tự đổi dấu xuống dòng cho đúng từng hệ điều hành,
+# tránh lỗi file "nhìn giống nhau nhưng Git báo khác nhau" giữa Windows và Mac/Linux.
+* text=auto

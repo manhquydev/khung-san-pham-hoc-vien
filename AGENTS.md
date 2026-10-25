@@ -36,7 +36,7 @@
 
 ## 4. Mọi PR đã merge đều phải có 1 mục nhật ký phát triển
 
-- Mỗi PR, khi merge, phải thêm đúng 1 mục vào `data/changelog.json` với:
+- Mỗi PR, khi merge, phải thêm đúng 1 mục nhật ký với:
   - `date`: ngày merge (định dạng YYYY-MM-DD).
   - `title`: một câu ngắn, lời dễ hiểu.
   - `description`: 1–2 câu giải thích cho PHỤ HUYNH hiểu sản phẩm đã thay đổi
@@ -45,8 +45,32 @@
   - `category`: một trong 4 nhãn: `Giao diện`, `Tính năng mới`, `Sửa lỗi`,
     `Cải tiến`.
   - `pr_url`: đường link tới PR đó, nếu có.
+- **Cách thêm mục tùy theo stage** (xem `docs/roadmap.md`):
+  - Stage 0 (chưa có D1): thêm vào `data/changelog.json`.
+  - Stage 1 trở đi: ghi qua API `POST /api/changelog` (kèm khóa giáo viên
+    từ Stage 2). Trang nhật ký tự đọc từ D1 trước, chỉ khi API không dùng
+    được mới dùng file JSON — nên đừng sửa file JSON nữa sau khi đã lên D1,
+    tránh hai nguồn dữ liệu lệch nhau.
 - Checklist này nằm trong mẫu PR (`.github/pull_request_template.md`) và agent
   phải kiểm tra nó trước khi xin review. Thiếu mục nhật ký = PR chưa xong.
+
+## 8. Quy tắc database, secret và môi trường Windows
+
+- **Thay đổi database chỉ qua migration:** thêm/sửa bảng luôn bằng file
+  migration mới (`migrations/0002_....sql`, ...), chạy
+  `wrangler d1 migrations apply DB --local` thử trước rồi mới `--remote`.
+  Không bao giờ sửa bảng trực tiếp trên Dashboard — sửa tay sẽ lệch với
+  code trong repo và các bạn khác không chạy lại được.
+- **Secret không bao giờ commit:** `TEACHER_KEY` và mọi khóa khác chỉ đặt
+  bằng `wrangler pages secret put`, không viết vào `wrangler.toml`, code,
+  hay chat. Khóa lộ thì báo ngay cho giáo viên đổi khóa.
+- **Học viên Windows dùng PowerShell:** mọi lệnh trong tài liệu đều viết
+  cho PowerShell, đường dẫn dùng dấu `\`. Chạy file `.ps1` bằng
+  `powershell -ExecutionPolicy Bypass -File ...` (xem
+  `docs/setup-windows.md` bước 4).
+- **Dấu xuống dòng:** repo đã có `.gitattributes` (`* text=auto`) để Git
+  tự đổi dấu xuống dòng cho đúng từng hệ điều hành — không tự sửa file
+  này, không commit file với dấu xuống dòng lạ gây nhiễu diff.
 
 ## 5. An toàn khóa và thông tin
 

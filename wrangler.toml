@@ -1,6 +1,24 @@
-# Cloudflare Pages — trang tĩnh, không cần build.
-# Khi kết nối qua Dashboard, chọn: Framework preset None,
-# Build command để trống, Output directory là thư mục gốc.
-# File này chỉ để ghi nhận tên project; không bắt buộc khi deploy qua Dashboard.
+# Cloudflare Pages — khung sản phẩm học viên, đi dần từ tĩnh sang full-stack.
+#
+# Deploy qua Dashboard: Framework preset None, Build command để trống,
+# Build output directory là thư mục gốc (xem docs/setup-windows.md bước 10).
+#
+# Deploy qua CLI: npx wrangler pages deploy . --project-name khung-san-pham-hoc-vien
 name = "khung-san-pham-hoc-vien"
 pages_build_output_dir = "."
+compatibility_date = "2026-10-25"
+
+# --- Database D1 (Stage 1 trở đi) ---
+# Tạo database rồi dán database_id thật vào đây:
+#   npx wrangler d1 create khung-san-pham-hoc-vien
+# Chưa điền database_id thì trang vẫn chạy bằng data/changelog.json (Stage 0);
+# đừng cố deploy Functions khi database_id còn là TO-FILL.
+[[d1_databases]]
+binding = "DB"
+database_name = "khung-san-pham-hoc-vien"
+database_id = "TO-FILL"
+
+# --- Khóa giáo viên (Stage 2) ---
+# TEACHER_KEY KHÔNG viết vào file này, không commit vào repo.
+# Đặt bằng lệnh (mỗi project Pages một lần):
+#   npx wrangler pages secret put TEACHER_KEY --project-name khung-san-pham-hoc-vien
