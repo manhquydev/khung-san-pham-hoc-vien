@@ -1,0 +1,6 @@
+# Cloudflare Pages — trang tĩnh, không cần build.
+# Khi kết nối qua Dashboard, chọn: Framework preset None,
+# Build command để trống, Output directory là thư mục gốc.
+# File này chỉ để ghi nhận tên project; không bắt buộc khi deploy qua Dashboard.
+name = "khung-san-pham-hoc-vien"
+pages_build_output_dir = "."
