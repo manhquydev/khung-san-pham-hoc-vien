@@ -5,8 +5,11 @@ bài học riêng, làm xong stage trước mới sang stage sau. Học viên n�
 đi qua Stage 0; các stage sau đi theo tiến độ của lớp.
 
 > Nhắc lại quy tắc hạn mức (xem `docs/gioi-han-free.md`): hạn mức tính theo
-> **tài khoản**. Mỗi học viên dùng tài khoản Cloudflare miễn phí của riêng
-> mình; tài khoản giáo viên chỉ để demo.
+> **tài khoản**. Mô hình đã chốt: **MỘT tài khoản Cloudflare do giáo viên
+> đứng tên, mỗi nhóm một project Pages + một database D1 riêng trong tài
+> khoản đó**. Học viên không tạo tài khoản Cloudflare và không giữ khóa
+> nền tảng nào — cả lớp dùng chung hạn mức của tài khoản giáo viên, với
+> 2 nhóm thì vẫn dư dả.
 
 ## Stage 0 — Trang tĩnh + file JSON (bắt đầu ở đây)
 
@@ -14,17 +17,22 @@ bài học riêng, làm xong stage trước mới sang stage sau. Học viên n�
   `public/nhat-ky.js` đọc `public/data/changelog.json`, hiển thị nhật ký
   theo ngày, lời dễ hiểu cho phụ huynh.
 - **Thay đổi so với trước:** không có — đây là bản khung v1.
-- **Kiểm chứng:** deploy qua Dashboard (xem `docs/setup-windows.md` phần
-  Deploy), mở đường link `*.pages.dev`, mở trang Nhật ký thấy 3 mục ví dụ.
+- **Kiểm chứng:** giáo viên đã nối repo nhóm với project Pages qua
+  Dashboard ở phần chuẩn bị (xem `docs/setup-windows.md` phần 0) — merge
+  vào `main` là tự deploy; mở đường link `*.pages.dev`, mở trang Nhật ký
+  thấy 3 mục ví dụ từ database của nhóm.
 - **Tốn hạn mức:** gần như 0. File tĩnh không giới hạn request/băng thông.
   Chỉ tốn lượt build (500 lượt/tháng/tài khoản).
 
 ## Stage 1 — Functions đọc từ database D1
 
-- **Thay đổi:** tạo database D1 (`npx --yes wrangler d1 create`), điền
-  `database_id` vào `wrangler.toml`, chạy migration
-  (`migrations/0001_changelog.sql`) và seed (`migrations/seed.sql`).
-  Trang nhật ký **tự động** gọi `/api/changelog` trước, không cần sửa
+- **Thay đổi:** giáo viên tạo database D1 của nhóm, điền `database_id`
+  vào bản copy `wrangler.toml` của repo nhóm và chạy migration
+  (`migrations/0001_changelog.sql`) + seed (`migrations/seed.sql`) trên
+  database thật — tất cả đã làm ở phần chuẩn bị (xem
+  `docs/setup-windows.md` phần 0). Học viên tập chạy migration trên
+  database **local** của máy mình, không chạy lệnh remote. Trang nhật ký
+  **tự động** gọi `/api/changelog` trước, không cần sửa
   `public/nhat-ky.js`.
 - **Kiểm chứng:** mở `/api/health` thấy `d1_configured: true`; mở trang
   Nhật ký thấy đúng 3 mục ví dụ; đổi tên tạm
@@ -42,13 +50,14 @@ bài học riêng, làm xong stage trước mới sang stage sau. Học viên n�
 
 ## Stage 2 — Ghi nhật ký qua API có khóa giáo viên
 
-- **Thay đổi:** đặt secret `TEACHER_KEY` bằng
+- **Thay đổi:** giáo viên đặt secret `TEACHER_KEY` bằng
   `npx --yes wrangler pages secret put TEACHER_KEY --project-name
-  <ten-project-cua-nhom>` (giáo viên tự gõ trực tiếp trên máy học viên,
-  xem `docs/setup-windows.md` phần Stage 1/2). Từ đây, thêm mục nhật ký
-  bằng cách POST tới `/api/changelog` kèm header `x-teacher-key` thay vì
-  sửa file JSON tay (ví dụ lệnh PowerShell đầy đủ ở phần Stage 1/2 của
-  `docs/setup-windows.md`).
+  <ten-project-cua-nhom>` từ **máy giáo viên**, một lần cho mỗi project
+  (đã làm ở phần chuẩn bị, xem `docs/setup-windows.md` phần 0). Từ đây,
+  thêm mục nhật ký bằng cách POST tới `/api/changelog` kèm header
+  `x-teacher-key` thay vì sửa file JSON tay (ví dụ lệnh PowerShell đầy
+  đủ ở phần Stage 1/2 của `docs/setup-windows.md`; học viên tập POST
+  trên dev server local với `.dev.vars`, không giữ khóa thật).
 - **Kiểm chứng:** POST không kèm khóa phải bị từ chối (401); POST kèm
   khóa đúng thì mục mới hiện lên trang Nhật ký; mở `/api/health` thấy
   `teacher_key_configured: true`.
@@ -57,8 +66,8 @@ bài học riêng, làm xong stage trước mới sang stage sau. Học viên n�
   khác với bản roadmap cũ: POST ghi **thẳng** vào D1 production, không
   đi qua PR — nên ở Stage 2, review PR không còn là cổng kiểm soát mục
   nhật ký nữa. Thay vào đó, giáo viên rà soát trang nhật ký trực tiếp
-  hằng tuần; mục nào sai thì xóa bằng lệnh (chạy ở thư mục repo, đã
-  đăng nhập wrangler):
+  hằng tuần; mục nào sai thì **giáo viên** xóa bằng lệnh (chạy ở thư mục
+  repo trên máy giáo viên, đã đăng nhập wrangler bằng tài khoản giáo viên):
 
 ```powershell
 npx --yes wrangler d1 execute DB --remote --command "DELETE FROM changelog WHERE id = <id-muc-sai>;"

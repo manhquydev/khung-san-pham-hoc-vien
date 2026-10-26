@@ -1,0 +1,22 @@
+# File mẫu cho biến môi trường LOCAL khi tập trên máy học viên.
+#
+# Cách dùng: copy file này thành `.dev.vars` (cùng thư mục với wrangler.toml),
+# rồi nhờ GIÁO VIÊN gõ khóa thật vào đó khi lớp tới Stage 2 và học viên tập
+# ghi mục nhật ký qua API trên máy mình:
+#   TEACHER_KEY=<khoa-giao-vien-cap>
+#
+# QUY TẮC:
+# - File này CHỈ dùng cho dev server local (`wrangler pages dev`).
+#   Production KHÔNG dùng file này — production dùng secret đã đặt bằng
+#   `wrangler pages secret put` (giáo viên đặt, xem docs/setup-windows.md
+#   phần 0, bước G3).
+# - File `.dev.vars` thật KHÔNG BAO GIỜ commit lên git (đã có trong
+#   `.gitignore`). Hết buổi tập, giáo viên thu hồi file đó trên máy học
+#   viên hoặc đổi khóa.
+# - File này KHÔNG phải chỗ để đăng nhập wrangler. Wrangler KHÔNG đọc
+#   `.dev.vars` để tự đăng nhập — đừng ghi token tài khoản Cloudflare
+#   vào đây, vì làm vậy là đưa credential tài khoản vào runtime của
+#   Function, nơi code học viên có thể đọc được.
+# - Học viên KHÔNG tự tạo khóa, KHÔNG giữ khóa sau buổi tập.
+
+TEACHER_KEY=<khoa-giao-vien-cap>

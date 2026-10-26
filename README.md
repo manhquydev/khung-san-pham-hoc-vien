@@ -11,41 +11,59 @@ nhật ký phát triển.
 
 1. Repo này được bật chế độ Template trên GitHub (riêng tư cho tới khi khóa
    học bắt đầu, giáo viên mở công khai khi tới thời điểm triển khai).
-2. Học viên bấm **Use this template** → tạo repo riêng của mình → clone về máy.
+2. Mỗi nhóm bấm **Use this template** → tạo repo riêng của nhóm → clone về máy.
 3. Học viên đổi tên sản phẩm ở 2 chỗ (xem phần học viên bên dưới) rồi bắt đầu
    bằng 1 câu prompt thường — agent tự đưa vào quy trình FlowSkill, không cần
    gõ `/flow`.
 
-### Đưa trang web lên mạng trong vài phút (Cloudflare Pages)
+### Mô hình tài khoản đã chốt: MỘT tài khoản giáo viên, mỗi nhóm một project
 
-1. Vào Cloudflare Dashboard → Pages → Create application → Pages → Connect to Git.
-2. Chọn repo của học viên, bấm Begin setup.
-3. Framework preset: **None**. Build command: **để trống**. Build output
-   directory: **public** (chỉ thư mục `public/` mới thành trang web công
-   khai). Bấm Save and Deploy.
-4. Sau vài phút sẽ có đường link `*.pages.dev` — đó là "bằng chứng xong" cho
-   mỗi mốc: link thật mở được, không chỉ chạy trên máy học viên.
+- **Một tài khoản Cloudflare duy nhất do giáo viên đứng tên** (gói miễn
+  phí, không cần thẻ). Mỗi nhóm có **một project Pages + một database
+  D1 riêng** trong tài khoản đó.
+- **Học viên KHÔNG tạo tài khoản Cloudflare, KHÔNG đăng nhập wrangler,
+  KHÔNG giữ bất kỳ khóa nền tảng nào.** Tài khoản GitHub cá nhân + lịch
+  sử PR vẫn là bằng chứng đóng góp của từng em — phía Cloudflare không
+  cần thêm tài khoản nào nữa.
+- Hạn mức tính theo tài khoản, không tính theo project — cả lớp dùng
+  chung 100.000 request/ngày và 500 lượt build/tháng (xem
+  `docs/gioi-han-free.md`). Với 2 nhóm thì mức này vẫn dư dả; giáo viên
+  xem mục Usage mỗi tuần trong thời gian lớp deploy nhiều.
 
-> ⚠️ **Mỗi học viên dùng tài khoản Cloudflare miễn phí của riêng mình.**
-> Hạn mức tính theo tài khoản, không tính theo project — cả lớp dồn vào
-> một tài khoản sẽ dùng chung 100.000 request/ngày và 500 lượt build/tháng
-> (xem `docs/gioi-han-free.md`). Tài khoản giáo viên chỉ để demo.
+### Giáo viên chuẩn bị trước khi học viên clone (bắt buộc, theo thứ tự)
+
+Làm đủ phần **"Giáo viên chuẩn bị trước"** trong
+`docs/setup-windows.md` cho mỗi nhóm, theo đúng thứ tự: tạo project
+Pages + database D1 của nhóm → điền `database_name`/`database_id` vào
+bản copy `wrangler.toml` của repo nhóm và commit → đặt `TEACHER_KEY`
+cho project đó bằng `wrangler pages secret put` → nối repo nhóm với
+project qua Dashboard (Connect to Git). **Tuyệt đối không nối Git khi
+`database_id` còn là TO-FILL.** Ghi lại mọi project vào
+`docs/bang-theo-doi-giao-vien.md` (không bao giờ ghi giá trị khóa vào đó).
+
+Sau khi nối xong, **merge vào `main` là tự deploy** — học viên không
+deploy bằng lệnh. Đường link `*.pages.dev` của nhóm là "bằng chứng xong"
+cho mỗi mốc: link thật mở được, không chỉ chạy trên máy học viên. Deploy
+bằng lệnh CLI (nếu cần) là **chỉ giáo viên** làm.
 
 ### Cài đặt lần đầu cho học viên Windows
 
-Học viên làm theo `docs/setup-windows.md`: phần Lần đầu, Stage 0 (tài
-khoản, cài Git/Node.js/VS Code, clone repo, chạy script kiểm tra, đăng
-nhập wrangler, deploy, kiểm tra) rồi mới tới phần Stage 1/2 (tạo D1,
-migration, khóa giáo viên) khi lớp tới đó. Trước khi deploy, chạy script
-kiểm tra môi trường ở thư mục gốc của repo:
+Học viên làm theo `docs/setup-windows.md`: phần Lần đầu, Stage 0 (cài
+Git/Node.js/VS Code, clone repo, chạy script kiểm tra, code, mở PR, kiểm
+tra preview, merge, kiểm tra production) rồi mới tới phần Stage 1/2 khi
+lớp tới đó. Các bước tạo D1, migration remote và đặt khóa giáo viên là
+việc của giáo viên — học viên chỉ chạy migration và database **local**
+trên máy mình để tập. Chạy script kiểm tra môi trường ở thư mục gốc của
+repo:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\check-env.ps1
 ```
 
-Script báo PASS/FAIL từng mục kèm cách sửa; sửa xong chạy lại tới khi toàn
-PASS (trừ 2 mục Cloudflare login và D1 database_id sẽ PASS sau khi làm
-xong bước đăng nhập và phần Stage 1/2).
+Script báo PASS/FAIL từng mục kèm cách sửa; sửa xong chạy lại tới khi
+toàn PASS. Mục đăng nhập Cloudflare chỉ là ghi chú cho giáo viên, không
+chặn học viên — học viên không cần đăng nhập cũng đạt toàn PASS cho các
+mục của mình.
 
 ### Lộ trình đi dần sang full-stack (Stage 0–2 đã có trong repo)
 
@@ -88,19 +106,23 @@ chứng từng stage và mức tốn hạn mức trong `docs/roadmap.md`):
 
 ### Bắt đầu
 
-1. Bấm **Use this template** để tạo repo riêng, rồi clone về máy.
+1. Bấm **Use this template** để tạo repo riêng của nhóm, rồi clone về máy.
 2. Học viên Windows làm theo `docs/setup-windows.md` từng bước: phần Lần
-   đầu, Stage 0 (tài khoản → cài Git, Node.js LTS, VS Code → clone →
-   chạy `scripts\check-env.ps1` → đăng nhập wrangler → deploy → mở
-   `/nhat-ky` và `/api/health` kiểm tra). Phần Stage 1/2 (tạo D1,
-   migration, khóa giáo viên) chỉ làm khi giáo viên báo lớp tới đó.
+   đầu, Stage 0 (cài Git, Node.js LTS, VS Code → clone → chạy
+   `scripts\check-env.ps1` → code → mở PR → kiểm tra preview → merge →
+   mở `/nhat-ky` và `/api/health` kiểm tra production). **Không tạo tài
+   khoản Cloudflare, không đăng nhập wrangler, không deploy bằng lệnh —
+   giáo viên đã nối sẵn repo nhóm với project Pages, merge vào `main`
+   là tự lên mạng.** Phần Stage 1/2 chỉ làm khi giáo viên báo lớp tới
+   đó; các bước tạo D1, migration remote và đặt khóa là việc của giáo
+   viên, học viên chỉ tập trên database local của máy mình.
 3. Đổi tên sản phẩm ở các chỗ sau (tên thật của SẢN PHẨM, không phải tên
    thật của con):
    - `public/index.html`: dòng `<title>` và dòng `<h1>[Tên sản phẩm]</h1>`.
    - `public/nhat-ky.html`: dòng `<title>` (thay `[Tên sản phẩm]` bằng tên thật của sản phẩm).
-   - `wrangler.toml`: dòng `name` (đổi tên khung mẫu thành tên project
-     Pages thật của nhóm) — tên này cũng là tên dùng trong lệnh deploy
-     `--project-name` khi con không kèm cờ đó.
+   - `wrangler.toml`: dòng `name` **do giáo viên điền** tên project
+     Pages thật của nhóm vào bản copy của repo nhóm — học viên không tự
+     đổi dòng này.
 4. Xóa 3 mục VÍ DỤ trong `public/data/changelog.json` và thay bằng mục thật đầu tiên
    của nhóm mình khi có mốc hoàn thành. Sau khi lên Stage 1 (D1), xóa 3 dòng
    ví dụ trong database bằng lệnh trong `docs/setup-windows.md` phần Stage 1/2.

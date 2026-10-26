@@ -61,14 +61,25 @@
 
 ## 5. Quy tắc database, secret và môi trường Windows
 
+- **Mô hình tài khoản đã chốt: MỘT tài khoản Cloudflare do giáo viên
+  đứng tên, mỗi nhóm một project Pages + một database D1 riêng trong
+  tài khoản đó. Học viên KHÔNG tạo tài khoản Cloudflare, KHÔNG đăng nhập
+  wrangler, KHÔNG giữ bất kỳ khóa nền tảng nào.** Giáo viên là người
+  duy nhất giữ `TEACHER_KEY` và mọi secret kiểu `ADMIN_CODE` của
+  project; deploy chạy qua Git (merge vào `main` là tự deploy), deploy
+  bằng lệnh CLI là chỉ giáo viên làm.
 - **Thay đổi database chỉ qua migration:** thêm/sửa bảng luôn bằng file
   migration mới (`migrations/0002_....sql`, ...), chạy
-  `npx --yes wrangler d1 migrations apply DB --local` thử trước rồi mới `--remote`.
-  Không bao giờ sửa bảng trực tiếp trên Dashboard — sửa tay sẽ lệch với
-  code trong repo và các bạn khác không chạy lại được.
+  `npx --yes wrangler d1 migrations apply DB --local` thử trên máy mình.
+  Lệnh `--remote` (database thật của nhóm) là **CHỈ GIÁO VIÊN** chạy từ
+  máy giáo viên. Không bao giờ sửa bảng trực tiếp trên Dashboard — sửa
+  tay sẽ lệch với code trong repo và các bạn khác không chạy lại được.
 - **Secret không bao giờ commit:** `TEACHER_KEY` và mọi khóa khác chỉ đặt
-  bằng `npx --yes wrangler pages secret put`, không viết vào `wrangler.toml`, code,
-  hay chat. Khóa lộ thì báo ngay cho giáo viên đổi khóa.
+  bằng `npx --yes wrangler pages secret put` từ máy giáo viên, không viết
+  vào `wrangler.toml`, code, hay chat. Học viên tập POST local bằng file
+  `.dev.vars` (xem `.dev.vars.example`) — file thật không bao giờ commit,
+  hết buổi giáo viên thu hồi hoặc đổi khóa. Khóa lộ thì báo ngay cho giáo
+  viên đổi khóa.
 - **Học viên Windows dùng PowerShell:** mọi lệnh trong tài liệu đều viết
   cho PowerShell, đường dẫn dùng dấu `\`. Chạy file `.ps1` bằng
   `powershell -ExecutionPolicy Bypass -File ...` (xem
@@ -80,7 +91,8 @@
 ## 6. An toàn khóa và thông tin
 
 - TUYỆT ĐỐI không dán khóa, mật khẩu, token vào repo, slide, hay khung chat
-  chung. Khóa chỉ nằm ở biến môi trường do giáo viên quản lý.
+  chung. Khóa chỉ nằm ở biến môi trường do giáo viên quản lý — học viên
+  không giữ khóa nền tảng nào, kể cả khóa của chính project nhóm mình.
 - Không đưa thông tin cá nhân thật (số điện thoại, email, địa chỉ) vào repo.
   Chỉ dùng tên sản phẩm và tên nhóm dạng placeholder.
 - Không đưa tên thật, ảnh, tên trường/lớp của học viên lên trang web công

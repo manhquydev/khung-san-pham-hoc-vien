@@ -3,6 +3,12 @@
 # Cách chạy (đứng ở thư mục gốc của repo, mở PowerShell):
 #   powershell -ExecutionPolicy Bypass -File scripts\check-env.ps1
 #
+# MÔ HÌNH TÀI KHOẢN ĐÃ CHỐT: MỘT tài khoản Cloudflare do giáo viên đứng tên,
+# mỗi nhóm một project Pages + một database D1. Học viên KHÔNG cần đăng nhập
+# Cloudflare — mục đăng nhập bên dưới chỉ là ghi chú cho giáo viên và luôn
+# đạt với học viên. Học viên không cần đăng nhập vẫn đạt toàn PASS cho các
+# mục của mình (xem docs/setup-windows.md phần "Giáo viên chuẩn bị trước").
+#
 # Ghi chú về ExecutionPolicy: Windows mặc định chặn chạy file .ps1 tải về.
 # Lệnh trên chỉ "mở cửa" cho đúng lần chạy này, không đổi cài đặt máy vĩnh viễn.
 # Nếu muốn chạy trực tiếp về sau: Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
@@ -76,16 +82,12 @@ if (Get-Command wrangler -ErrorAction SilentlyContinue) {
 }
 Write-Result ($null -ne $wranglerCmd) "Wrangler" $wranglerDetail "Chay: npx --yes wrangler --version (lan dau tai ve hoi lau). Neu mang truong chan npm, nho thay co cap quyen."
 
-# 5. Dang nhap Cloudflare (chi kiem tra khi wrangler chay duoc)
-if ($null -ne $wranglerCmd) {
-    $whoArgs = $wranglerCmd + @("whoami")
-    $who = Get-CommandOutput $whoArgs
-    $loggedIn = $who.Ok -and ($who.Output -match "logged in|Account|email")
-    $whoDetail = if ($who.Output) { ($who.Output -split "`n")[0] } else { "" }
-    Write-Result $loggedIn "Cloudflare login" $whoDetail "Chay: npx --yes wrangler login (trinh duyet se mo ra, dang nhap tai khoan Cloudflare MIEN PHI cua rieng con, khong can the)."
-} else {
-    Write-Result $false "Cloudflare login" "Bo qua vi wrangler chua chay duoc" "Sua muc Wrangler truoc roi chay lai script."
-}
+# 5. Dang nhap Cloudflare — CHI LA GHI CHU CHO GIAO VIEN, LUON DAT VOI HOC VIEN.
+# Mo hinh da chot: mot tai khoan Cloudflare do giao vien dung ten, moi nhom
+# mot project Pages + mot D1. Hoc vien KHONG can dang nhap, KHONG chay whoami,
+# KHONG bi muc nay chan. Neu may nay la may giao vien thi giao vien tu kiem
+# tra dang nhap bang: npx --yes wrangler whoami
+Write-Host "[INFO] Cloudflare login : chi giao vien can dang nhap (tai khoan giao vien, xem docs/setup-windows.md phan 'Giao vien chuan bi truoc'). Hoc vien bo qua muc nay." -ForegroundColor Gray
 
 # 6. File bat buoc cua repo co mat khong
 $requiredFiles = @(
@@ -123,13 +125,13 @@ if (Test-Path "wrangler.toml") {
 } else {
     $dbDetail = "Khong tim thay wrangler.toml"
 }
-Write-Result $dbFilled "D1 database_id" $dbDetail "Chay: npx --yes wrangler d1 create khung-<ten-nhom>, copy database_id in ra roi dan vao wrangler.toml (xem docs/setup-windows.md phan Stage 1/2). O Stage 0 (chi trang tinh) muc nay FAIL la binh thuong — trang van chay bang public/data/changelog.json."
+Write-Result $dbFilled "D1 database_id" $dbDetail "Giao vien dien database_id that cua nhom vao wrangler.toml o phan 'Giao vien chuan bi truoc' (docs/setup-windows.md phan 0, buoc G2) truoc khi hoc vien clone. Neu van la TO-FILL thi bao giao vien, hoc vien KHONG tu tao D1 hay tu dien id."
 
 Write-Host ""
 if ($failCount -gt 0) {
     Write-Host "Ket qua: $failCount muc FAIL. Sua theo huong dan tren roi chay lai script." -ForegroundColor Red
     exit 1
 } else {
-    Write-Host "Ket qua: TOAN PASS. May cua con da san sang de deploy (xem docs/setup-windows.md phan Deploy)." -ForegroundColor Green
+    Write-Host "Ket qua: TOAN PASS. May cua con da san sang de code va mo PR (merge vao main la tu deploy, xem docs/setup-windows.md phan 1)." -ForegroundColor Green
     exit 0
 }

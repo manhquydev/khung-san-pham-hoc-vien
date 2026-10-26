@@ -4,40 +4,123 @@ Tài liệu này đi từng bước một, từ máy trống tới khi trang web
 trên mạng. Mỗi bước đều có: **lệnh cần gõ → kết quả đúng sẽ thấy → nếu
 lỗi thì sửa thế nào**. Làm theo đúng thứ tự, đừng nhảy bước.
 
-> ⚠️ **Mỗi học viên dùng tài khoản Cloudflare MIỄN PHÍ của riêng mình**
-> (đăng ký không cần thẻ). Hạn mức tính theo tài khoản — xem
-> `docs/gioi-han-free.md` trước khi deploy. Tài khoản giáo viên chỉ để demo.
+> ⚠️ **MÔ HÌNH TÀI KHOẢN ĐÃ CHỐT: MỘT tài khoản Cloudflare do giáo viên
+> đứng tên, mỗi nhóm một project Pages + một database D1 riêng trong tài
+> khoản đó. Học viên KHÔNG tạo tài khoản Cloudflare, KHÔNG đăng nhập
+> wrangler, KHÔNG giữ bất kỳ khóa nền tảng nào, KHÔNG deploy bằng lệnh.**
+> Giáo viên nối sẵn repo của nhóm với project Pages — học viên chỉ cần
+> code, mở PR, merge là trang tự lên mạng. Hạn mức tính theo tài khoản
+> giáo viên (xem `docs/gioi-han-free.md`); với 2 nhóm thì vẫn dư dả.
 >
 > Mọi lệnh trong tài liệu này gõ trong **PowerShell** — chương trình gõ
 > lệnh có sẵn trên Windows (không phải Git Bash, không phải Command Prompt
 > cũ), đứng ở thư mục gốc của repo. Đường dẫn trên Windows dùng dấu `\`,
 > ví dụ `scripts\check-env.ps1`.
 >
-> **Đồng ý của phụ huynh:** Nhờ ba mẹ/người giám hộ tạo tài khoản cùng
-> con hoặc đồng ý cho con tạo; học viên dưới 13 tuổi phải có ba mẹ tạo
-> tài khoản cùng. Quy tắc này áp dụng cho cả tài khoản Cloudflare (bước 0)
-> và tài khoản GitHub (bước 4).
+> **Đồng ý của phụ huynh:** Nhờ ba mẹ/người giám hộ tạo tài khoản GitHub
+> cùng con hoặc đồng ý cho con tạo; học viên dưới 13 tuổi phải có ba mẹ
+> tạo tài khoản cùng (xem bước 4). Học viên không tạo bất kỳ tài khoản
+> hạ tầng nào khác — xem tờ thông báo phụ huynh
+> (`docs/thong-bao-phu-huynh.md`).
+
+---
+
+# PHẦN 0 — Giáo viên chuẩn bị trước (CHỈ GIÁO VIÊN, làm TRƯỚC khi học viên clone)
+
+Phần này giáo viên làm một lần cho mỗi nhóm, theo đúng thứ tự dưới đây.
+Học viên bỏ qua toàn bộ phần 0. Ghi lại mọi project vào
+`docs/bang-theo-doi-giao-vien.md` (không bao giờ ghi giá trị khóa vào đó).
+
+## Bước G1 — Tạo project Pages + database D1 của nhóm
+
+Trong tài khoản Cloudflare của giáo viên (gói miễn phí, không cần thẻ):
+
+1. Tạo một project Pages cho nhóm (đặt tên theo nhóm, ví dụ
+   `khung-<ten-nhom>`).
+2. Tạo một database D1 cho nhóm (cùng tên hoặc tên tương ứng).
+
+## Bước G2 — Điền database vào bản copy `wrangler.toml` của repo nhóm và commit
+
+Mở bản copy repo của nhóm, thay trong `wrangler.toml`:
+
+- Dòng `name` thành tên project Pages thật của nhóm.
+- Dòng `database_name` và `database_id` (mục `[[d1_databases]]`) thành
+  tên và id database vừa tạo ở bước G1.
+
+Commit và push thay đổi này lên nhánh `main` của repo nhóm.
+
+## Bước G3 — Đặt khóa giáo viên cho project (Stage 2)
+
+Từ **máy giáo viên** (đã đăng nhập wrangler bằng tài khoản giáo viên),
+gõ một lần cho mỗi project:
+
+```powershell
+npx --yes wrangler pages secret put TEACHER_KEY --project-name <ten-project-cua-nhom>
+```
+
+Thay `<ten-project-cua-nhom>` bằng tên project Pages thật của nhóm.
+PowerShell sẽ hỏi nhập giá trị khóa (gõ xong bấm Enter, chữ khóa không
+hiện lên màn hình là bình thường).
+
+- **Kết quả đúng:** báo secret đã lưu.
+- **TUYỆT ĐỐI KHÔNG** viết khóa vào `wrangler.toml`, vào code, hay gửi
+  khóa qua chat chung. Khóa lộ thì coi như cổng giữ lớp đã mở toang —
+  đổi khóa ngay và đặt lại bằng lệnh trên.
+
+## Bước G4 — Nối repo nhóm với project qua Dashboard (đường deploy DUY NHẤT)
+
+1. Cloudflare Dashboard → Pages → Create application → Pages →
+   Connect to Git → chọn repo của nhóm.
+2. Framework preset: **None**. Build command: **để trống**. Build output
+   directory: **public**. Bấm **Save and Deploy**.
+
+> ⚠️ **TUYỆT ĐỐI KHÔNG nối Git khi `database_id` còn là TO-FILL.**
+> Deploy đầu tiên sẽ kèm Functions gắn binding giả, trang nhật ký lỗi
+> thay vì hiện mục ví dụ. Chỉ nối Git sau khi bước G2 đã điền
+> `database_id` thật và commit. File `wrangler.toml` là nguồn cấu hình
+> chuẩn của project Pages, nên deploy qua Dashboard vẫn nhận đúng cấu
+> hình trong file (kể cả binding database).
+
+## Bước G5 — Chạy migration + seed cho database thật của nhóm
+
+Cũng từ máy giáo viên, chạy một lần cho mỗi nhóm để lần deploy đầu tiên
+đã có bảng và 3 mục ví dụ trong D1 (nếu không, trang nhật ký sẽ lỗi vì
+bảng chưa tồn tại):
+
+```powershell
+npx --yes wrangler d1 migrations apply DB --remote
+npx --yes wrangler d1 execute DB --remote --file migrations\seed.sql
+```
+
+- **Kết quả đúng:** mỗi lệnh báo thành công (applied / executed).
+- Sau bước này, đường link `https://<ten-project>.pages.dev/` của nhóm
+  đã chạy thật: trang chủ, trang Nhật ký (3 mục ví dụ từ D1) và
+  `/api/health` báo `d1_configured: true`.
+
+Từ đây, **merge vào `main` là tự deploy** — học viên không deploy bằng
+lệnh, không đăng nhập wrangler, không chạm vào tài khoản giáo viên.
 
 ---
 
 # PHẦN 1 — Lần đầu, Stage 0 (mọi học viên làm buổi đầu)
 
-Phần này chỉ đưa trang tĩnh lên mạng, chưa đụng tới database. Xong phần 1,
-trang chủ và trang Nhật ký đã chạy thật bằng file JSON. Phần 2 (database,
-khóa giáo viên) chỉ làm khi lớp tới Stage 1/2 — đừng làm trước.
+Phần này đưa trang của nhóm lên mạng qua quy trình: code → mở PR → giáo
+viên review → merge → production tự cập nhật. Học viên không đụng tới
+tài khoản Cloudflare hay database thật. Phần 2 (database local, khóa
+giáo viên) chỉ làm khi lớp tới Stage 1/2 — đừng làm trước.
 
-## Bước 0 — Tạo tài khoản Cloudflare miễn phí (không cần thẻ)
+## Bước 0 — Nhận link từ giáo viên (không tạo tài khoản gì cả)
 
-1. Mở https://dash.cloudflare.com/sign-up, đăng ký bằng email.
-2. Cloudflare có thể hỏi thêm thẻ cho một số dịch vụ — **đừng nhập thẻ**.
-   Gói Free dùng cho khóa học không yêu cầu thẻ.
-3. Đăng nhập xong thấy được Dashboard là đạt.
+Trước buổi đầu, giáo viên đưa cho nhóm 2 đường link:
 
-- **Nếu con chưa có email riêng:** dùng email phụ huynh đồng ý cho con
-  dùng, hoặc nhờ giáo viên cấp tài khoản. Đừng tự bịa email — email này
-  là nơi nhận thông báo của tài khoản.
-- **Nếu lỗi:** không nhận được email xác nhận → kiểm tra hộp Spam, hoặc
-  bấm gửi lại email xác nhận trong Dashboard.
+1. Đường link repo GitHub của nhóm (để clone ở bước 4).
+2. Đường link `https://<ten-project>.pages.dev/` của nhóm (để kiểm tra
+   ở bước 7).
+
+**Con không tạo tài khoản Cloudflare, không đăng nhập wrangler, không
+deploy bằng lệnh.** Nếu ai đó bảo con đăng ký tài khoản Cloudflare hay
+dán khóa vào đâu đó thì dừng lại và hỏi giáo viên — đó không phải quy
+trình của lớp.
 
 ## Bước 1 — Cài Git for Windows
 
@@ -109,112 +192,78 @@ cd <ten-repo>
 
 ## Bước 5 — Chạy script kiểm tra môi trường
 
-Script này kiểm tra một lượt: Git, Node.js, npm, wrangler, đăng nhập
-Cloudflare, đủ file khung, và `database_id` đã điền chưa. Chạy ở thư mục
-gốc của repo (nơi có file `wrangler.toml`):
+Script này kiểm tra một lượt: Git, Node.js, npm, wrangler, đủ file
+khung, và `database_id` đã điền chưa. **Script không yêu cầu con đăng
+nhập Cloudflare** — mục đăng nhập chỉ là ghi chú cho giáo viên và luôn
+đạt với học viên. Chạy ở thư mục gốc của repo (nơi có file
+`wrangler.toml`):
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\check-env.ps1
 ```
 
 - **Kết quả đúng (lúc mới bắt đầu, Stage 0):** PASS ở Git, Node.js,
-  npm, wrangler và "File khung" (vì con đã clone ở bước 4 nên đủ file);
-  FAIL ở "Cloudflare login" và "D1 database_id" là **bình thường** — 2 mục
-  đó sẽ PASS sau bước 6 và phần Stage 1/2. Script thoát mã 1 khi còn
-  FAIL, đó là cố tình để con biết còn việc chưa xong.
-- **Nếu "File khung" FAIL:** con đang đứng sai thư mục. Gõ `cd` tới thư
-  mục repo (nơi có file `wrangler.toml`) rồi chạy lại. Đừng lờ output
+  npm, wrangler, "File khung" (vì con đã clone ở bước 4 nên đủ file)
+  và "D1 database_id" (vì giáo viên đã điền database thật của nhóm
+  vào `wrangler.toml` ở phần 0, bước G2, trước khi con clone).
+  Script thoát mã 1 khi còn FAIL, đó là cố tình để con biết còn việc
+  chưa xong.
+- **Nếu "D1 database_id" FAIL (vẫn là TO-FILL):** giáo viên chưa làm
+  xong phần 0 — báo giáo viên, **đừng tự tạo database hay tự điền id**.
+- **Nếu "File khung" FAIL:** con đang đứng sai thư mục. Gõ `cd` tới
+  thư mục repo (nơi có file `wrangler.toml`) rồi chạy lại. Đừng lờ output
   FAIL đi — mỗi mục FAIL đều kèm cách sửa ngay bên dưới nó.
 - **Ghi chú về ExecutionPolicy:** Windows mặc định chặn chạy file `.ps1`.
   Cờ `-ExecutionPolicy Bypass` ở lệnh trên chỉ mở cửa cho đúng lần chạy
   này, không đổi cài đặt máy vĩnh viễn. Muốn chạy trực tiếp về sau thì gõ
   một lần: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
 
-## Bước 6 — Đăng nhập Cloudflare bằng wrangler
+## Bước 6 — Không đăng nhập, không deploy bằng lệnh (giáo viên đã nối sẵn)
 
-```powershell
-npx --yes wrangler login
-```
+**Học viên bỏ qua đăng nhập wrangler và deploy bằng lệnh.** Giáo viên
+đã nối repo của nhóm với project Pages ở phần 0, bước G4 — từ đây,
+đường lên mạng của nhóm chạy như sau:
 
-Cờ `--yes` nghĩa là "lần đầu máy chưa có wrangler thì tự đồng ý tải về",
-để con không gặp câu hỏi tiếng Anh "Ok to proceed? (y)" mà tài liệu cũ
-không chuẩn bị trước. Trình duyệt sẽ tự mở ra, hỏi cho phép wrangler
-truy cập tài khoản → bấm **Allow**. Quay lại PowerShell, gõ:
+1. Con code trên nhánh riêng, mở PR, giáo viên review.
+2. Merge PR vào `main` → Cloudflare tự build và deploy production.
+3. Mở đường link `https://<ten-project>.pages.dev/` là thấy bản mới.
 
-```powershell
-npx --yes wrangler whoami
-```
+Deploy bằng lệnh CLI (`wrangler pages deploy ...`) là **CHỈ GIÁO VIÊN**
+làm khi cần, vì lệnh đó dùng tài khoản của giáo viên. Học viên gõ lệnh
+đó sẽ bị hỏi đăng nhập — dừng lại, đừng đăng nhập bằng tài khoản nào
+khác, hỏi giáo viên.
 
-- **Kết quả đúng:** có dòng tài khoản/email của con (ví dụ `Account Name`
-  hoặc email đăng ký).
-- **Nếu lỗi** (trình duyệt không mở): copy đường link mà PowerShell in ra,
-  dán vào trình duyệt đang đăng nhập Cloudflare rồi bấm Allow.
-- **Nếu lỗi** (mạng trường chặn): thử mạng điện thoại phát wifi, hoặc nhờ
-  giáo viên đăng nhập demo trên máy giáo viên trước.
+## Bước 7 — Kiểm tra lần cuối Stage 0
 
-Chạy lại script kiểm tra: mục "Cloudflare login" giờ phải PASS.
-
-## Bước 7 — Deploy lần đầu: 2 cách, chọn 1
-
-Deploy nghĩa là đưa trang web lên mạng để ai mở đường link cũng xem được
-(chứ không chỉ chạy trên máy con).
-
-### Cách A — Nối qua Dashboard (khuyên dùng lần đầu)
-
-1. Cloudflare Dashboard → Pages → Create application → Pages →
-   Connect to Git → chọn repo của nhóm.
-2. Framework preset: **None**. Build command: **để trống**. Build output
-   directory: **public**. Bấm **Save and Deploy**.
-3. Chờ vài phút, Dashboard báo thành công và cho đường link
-   `https://<ten-project>.pages.dev`.
-
-> Ghi chú: file `wrangler.toml` là nguồn cấu hình chuẩn của project
-> Pages, nên deploy qua Dashboard vẫn nhận đúng cấu hình trong file
-> (kể cả binding database ở Stage 1 sau này). Nếu sau này bước kiểm tra
-> Stage 1/2 báo `d1_configured: false` thì mới cần vào Dashboard →
-> Pages project → Settings → Functions → D1 database bindings → gắn
-> database vào binding `DB` (xem phần Stage 1/2, bước S4).
-
-### Cách B — Deploy bằng lệnh
-
-```powershell
-npx --yes wrangler pages deploy public --project-name <ten-project-cua-nhom>
-```
-
-Thay `<ten-project-cua-nhom>` bằng tên project Pages thật của nhóm (tên
-repo con đã tạo ở bước 4, giáo viên sẽ xác nhận nếu con không chắc).
-
-- **Kết quả đúng:** in ra đường link `*.pages.dev`.
-- **Nếu lỗi** (báo vượt 500 lượt build/tháng): tài khoản đó đã deploy quá
-  nhiều — xem `docs/gioi-han-free.md` (mỗi người một tài khoản, đừng dồn
-  cả lớp vào một tài khoản).
-- **Nếu lỗi** (báo file quá 25 MiB hoặc quá 20.000 file): kiểm tra có
-  nhét nhầm video/ảnh nặng hoặc thư mục `node_modules` vào repo không —
-  `node_modules` đã nằm trong `.gitignore`, đừng commit nó.
-
-## Bước 8 — Kiểm tra lần cuối Stage 0
-
-Mở trình duyệt, vào 3 đường link (thay bằng link thật của nhóm):
+Mở trình duyệt, vào 3 đường link (dùng link thật giáo viên đã đưa ở
+bước 0):
 
 1. `https://<ten-project>.pages.dev/` — trang chủ mở được, tiêu đề trang
    không còn dấu `[ ]` (nghĩa là con đã đổi `[Tên sản phẩm]` thành tên
    thật của SẢN PHẨM, không phải tên thật của con).
 2. `https://<ten-project>.pages.dev/nhat-ky` — trang Nhật ký hiện đủ 3
-   mục ví dụ, nhóm theo ngày, không vỡ bố cục trên điện thoại.
-3. `https://<ten-project>.pages.dev/api/health` — ở Stage 0, thấy
-   `"d1_configured": false` và `"teacher_key_configured": false` là
-   **ĐÚNG** (database và khóa giáo viên chỉ có từ Stage 1/2). Trang này
-   chỉ báo có/không, không lộ khóa.
+   mục ví dụ (đọc từ database của nhóm, giáo viên đã seed ở phần 0),
+   nhóm theo ngày, không vỡ bố cục trên điện thoại.
+3. `https://<ten-project>.pages.dev/api/health` — thấy
+   `"d1_configured": true` và `"teacher_key_configured": true` là
+   **ĐÚNG** (giáo viên đã chuẩn bị database và khóa ở phần 0). Trang
+   này chỉ báo có/không, không lộ khóa.
 
 - **Nếu trang nhật ký trống:** kiểm tra lại file
-  `public/data/changelog.json` có còn nguyên không.
-- **Nếu `/api/health` báo 404:** Functions chưa deploy theo — kiểm tra
-  thư mục `functions/` đã commit và push lên GitHub chưa, rồi deploy lại.
+  `public/data/changelog.json` có còn nguyên không (file này là dự
+  phòng khi API không dùng được), rồi báo giáo viên kiểm tra database
+  của nhóm.
+- **Nếu `/api/health` báo 404:** Functions chưa deploy theo — báo giáo
+  viên kiểm tra kết nối Git của project, học viên không tự deploy lại.
+- **Nếu `/api/health` báo `d1_configured: false`:** giáo viên chưa làm
+  xong phần 0 hoặc binding chưa gắn — báo giáo viên vào Dashboard →
+  Pages project → Settings → Functions → D1 database bindings → gắn
+  database của nhóm vào binding `DB`, rồi deploy lại.
 
 Khi cả 3 link đều đúng, môi trường của con đã xong cho Stage 0. Từ đây,
 mỗi tính năng mới đi theo quy trình trong `AGENTS.md`: nói ý tưởng bằng
 lời thường → agent đưa vào flow → làm trên nhánh → mở PR → giáo viên
-review → merge → mục nhật ký mới hiện lên trang.
+review → merge → production tự cập nhật, mục nhật ký mới hiện lên trang.
 
 ---
 
@@ -223,58 +272,59 @@ review → merge → mục nhật ký mới hiện lên trang.
 Phần này chỉ làm khi giáo viên báo lớp đã tới Stage 1 hoặc Stage 2. Làm
 trước sẽ bỏ qua bài học Stage 0 và dễ sai thứ tự.
 
-## Bước S1 — Tạo database D1 và điền database_id
+> Phân công đã chốt: **việc chạm vào tài khoản giáo viên là của giáo
+> viên** (tạo D1, migration remote, đặt khóa, xóa mục sai trên
+> production). **Học viên chỉ tập trên máy mình** (migration local,
+> database local, dev server local) và **không bao giờ chạy lệnh remote
+> nào bằng tài khoản giáo viên, không đăng nhập wrangler.**
+
+## Bước S1 — Database D1 của nhóm (GIÁO VIÊN ĐÃ LÀM Ở PHẦN 0)
 
 D1 là nơi chứa bảng dữ liệu chạy trên Cloudflare (nôm na là "cuốn sổ
 ghi chép" mà trang web đọc/ghi qua mạng). **Binding** là tên gọi để code
 tìm thấy database đó — trong khung này, binding tên là `DB`.
 
-Đứng ở thư mục repo, gõ:
+Giáo viên đã tạo database của nhóm và điền `database_name` /
+`database_id` thật vào `wrangler.toml` ở phần 0, bước G2, trước khi học
+viên clone. **Học viên không tự tạo database, không tự điền id.**
+
+- **Nếu script kiểm tra báo "D1 database_id" FAIL (vẫn là TO-FILL):**
+  giáo viên chưa làm xong phần 0 — báo giáo viên, đừng tự tạo database.
+- Lệnh giáo viên đã chạy (chỉ để học viên đọc hiểu, không gõ lại):
 
 ```powershell
 npx --yes wrangler d1 create khung-<ten-nhom>
 ```
 
-- **Kết quả đúng:** in ra một khối giống thế này (dãy id của con sẽ khác):
-
-```
-[[d1_databases]]
-binding = "DB"
-database_name = "khung-<ten-nhom>"
-database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-```
-
-Mở file `wrangler.toml`, thay dòng `database_name = "TO-FILL"` bằng tên
-database vừa tạo và dòng `database_id = "TO-FILL"` bằng dãy id thật vừa
-nhận được, lưu file.
-
-- **Nếu lỗi** (`database already exists`): tên database đã có người dùng
-  trong tài khoản của con — đổi tên thành `khung-<ten-nhom>-2` rồi tạo
-  lại, đồng thời sửa `database_name` trong `wrangler.toml` cho khớp.
-- **Nếu lỗi** (chưa đăng nhập): làm lại bước 6.
-
-Chạy lại script kiểm tra: mục "D1 database_id" giờ phải PASS.
-
-## Bước S2 — Chạy migration và dữ liệu ví dụ
+## Bước S2 — Migration: local thì học viên tập, remote thì CHỈ GIÁO VIÊN
 
 **Migration** là file ghi các bước tạo bảng — chạy nó để tạo bảng, thay
 vì bấm tạo bảng bằng tay trên Dashboard (tạo tay sẽ lệch với code trong
 repo và các bạn khác không chạy lại được).
 
+**Học viên tập trên máy mình** (không cần tài khoản, không cần đăng nhập):
+
 ```powershell
 npx --yes wrangler d1 migrations apply DB --local
+npx --yes wrangler pages dev --d1
+```
+
+Lệnh `--local` tạo database thử trên máy con để tập; dev server local
+cũng đọc database local đó.
+
+**CHỈ GIÁO VIÊN chạy lệnh remote** (đã chạy ở phần 0, bước G5, và chạy
+lại mỗi khi có migration mới):
+
+```powershell
 npx --yes wrangler d1 migrations apply DB --remote
 npx --yes wrangler d1 execute DB --remote --file migrations\seed.sql
 ```
 
-- **Kết quả đúng:** mỗi lệnh báo thành công (applied / executed). Lệnh
-  `--local` tạo database thử trên máy con để tập; `--remote` mới là
-  database thật trên Cloudflare.
-- **Nếu lỗi** (báo không tìm thấy database): kiểm tra `database_id`
-  trong `wrangler.toml` đã điền đúng chưa (bước S1), và tên binding là `DB`.
+- **Kết quả đúng:** mỗi lệnh báo thành công (applied / executed).
 - **Nếu lỗi** (báo bảng đã tồn tại): migration đã chạy rồi, bỏ qua và
   chạy tiếp lệnh sau.
-- Sau khi nhóm có mục nhật ký thật đầu tiên, **xóa 3 dòng ví dụ** bằng:
+- Sau khi nhóm có mục nhật ký thật đầu tiên, **giáo viên xóa 3 dòng ví
+  dụ trên production** bằng:
 
 ```powershell
 npx --yes wrangler d1 execute DB --remote --command "DELETE FROM changelog WHERE tieu_de LIKE 'VÍ DỤ%';"
@@ -290,9 +340,9 @@ npx --yes wrangler d1 execute DB --remote --command "DELETE FROM changelog WHERE
 
 ## Bước S3 — CHỈ GIÁO VIÊN LÀM — Đặt khóa giáo viên (Stage 2)
 
-**Học viên bỏ qua bước này.** Khóa này do giáo viên giữ và tự đặt:
-trong giờ setup, giáo viên gõ trực tiếp trên máy của từng học viên, học
-viên không tự tạo khóa và không giữ khóa sau đó.
+**Học viên bỏ qua bước này.** Khóa này do giáo viên giữ và tự đặt từ
+**máy giáo viên** (đã làm ở phần 0, bước G3, một lần cho mỗi project).
+Học viên không tự tạo khóa và không giữ khóa sau đó.
 
 ```powershell
 npx --yes wrangler pages secret put TEACHER_KEY --project-name <ten-project-cua-nhom>
@@ -303,9 +353,9 @@ PowerShell sẽ hỏi nhập giá trị khóa (gõ xong bấm Enter, chữ khóa
 hiện lên màn hình là bình thường).
 
 - **Kết quả đúng:** báo secret đã lưu.
-- **Nếu lỗi** (chưa có project Pages): deploy lần đầu ở bước 7 trước,
-  rồi quay lại bước này. Thứ tự này là bắt buộc vì lệnh đặt secret đòi
-  project Pages đã tồn tại.
+- **Nếu lỗi** (chưa có project Pages): làm bước G1 và G4 ở phần 0
+  trước, rồi quay lại bước này. Thứ tự này là bắt buộc vì lệnh đặt
+  secret đòi project Pages đã tồn tại.
 - **TUYỆT ĐỐI KHÔNG** viết khóa vào `wrangler.toml`, vào code, hay gửi
   khóa qua chat chung. Khóa lộ thì coi như cổng giữ lớp đã mở toang.
 
@@ -333,24 +383,34 @@ Invoke-RestMethod -Uri "https://<ten-project>.pages.dev/api/changelog" `
 - **Không kèm khóa** phải bị từ chối (401), **chưa cấu hình khóa** phải bị
   từ chối (503) — đó là cổng giữ lớp hoạt động đúng, không phải lỗi.
 
+### Ghi mục nhật ký local trên máy học viên (không cần khóa thật)
+
+Khi lớp tới Stage 2 và học viên muốn tập ghi qua API trên máy mình, giáo
+viên gõ khóa thật vào file `.dev.vars` trên máy đó (xem
+`.dev.vars.example` — file mẫu này không chứa khóa thật, không bao giờ
+commit file thật). Sau đó chạy dev server local và POST tới
+`http://localhost:8788/api/changelog` như ví dụ trên. Hết buổi, giáo
+viên thu hồi file `.dev.vars` trên máy đó hoặc đổi khóa.
+
 ## Bước S4 — Kiểm tra lần cuối Stage 1/2
 
 Mở trình duyệt (thay bằng link thật của nhóm):
 
 1. `https://<ten-project>.pages.dev/api/health` — thấy
-   `"d1_configured": true` (sau Stage 1) và `"teacher_key_configured": true`
-   (sau Stage 2).
+   `"d1_configured": true` và `"teacher_key_configured": true`
+   (giáo viên đã chuẩn bị xong ở phần 0).
 2. `https://<ten-project>.pages.dev/nhat-ky` — trang Nhật ký hiện đủ mục
-   từ D1 (không còn đọc file JSON nữa).
+   từ D1 (không còn đọc file JSON nữa, trừ khi API không dùng được).
 3. Ghi thử 1 mục qua API theo ví dụ ở bước S3, thấy mục mới hiện lên trang.
 
-- **Nếu `/api/health` báo `d1_configured: false` sau deploy qua
-  Dashboard:** vào Dashboard → Pages project → Settings → Functions →
-  D1 database bindings → gắn database của nhóm vào binding `DB`, rồi
-  deploy lại. File `wrangler.toml` vốn là nguồn cấu hình chuẩn nên
-  thường không cần bước này — chỉ làm khi kiểm tra báo false.
+- **Nếu `/api/health` báo `d1_configured: false`:** giáo viên vào
+  Dashboard → Pages project → Settings → Functions → D1 database
+  bindings → gắn database của nhóm vào binding `DB`, rồi deploy lại.
+  File `wrangler.toml` vốn là nguồn cấu hình chuẩn nên thường không
+  cần bước này — chỉ làm khi kiểm tra báo false. Học viên báo giáo
+  viên, không tự sửa.
 - **Nếu trang nhật ký trống sau khi lên D1:** mở `/api/health` xem
   `d1_configured` có phải `true` không. Nếu `true` mà trang vẫn trống
-  thì kiểm tra migration đã chạy `--remote` chưa (bước S2) — API trả
-  lỗi 500 lúc này là lỗi thật, trang sẽ báo "tạm thời chưa tải được"
-  chứ không tự hiện file JSON ví dụ che lỗi.
+  thì kiểm tra migration đã chạy `--remote` chưa (bước S2, giáo viên
+  chạy) — API trả lỗi 500 lúc này là lỗi thật, trang sẽ báo "tạm thời
+  chưa tải được" chứ không tự hiện file JSON ví dụ che lỗi.

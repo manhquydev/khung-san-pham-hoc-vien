@@ -1,26 +1,39 @@
 # Cloudflare Pages — khung sản phẩm học viên, đi dần từ tĩnh sang full-stack.
 #
-# Deploy qua Dashboard: Framework preset None, Build command để trống,
-# Build output directory là "public" (xem docs/setup-windows.md phần Deploy).
+# MÔ HÌNH TÀI KHOẢN ĐÃ CHỐT: MỘT tài khoản Cloudflare do giáo viên đứng tên,
+# mỗi NHÓM một project Pages + một database D1 riêng trong tài khoản đó.
+# Học viên KHÔNG tạo tài khoản Cloudflare, KHÔNG giữ khóa nền tảng nào.
+# Xem docs/setup-windows.md phần "Giáo viên chuẩn bị trước" và
+# docs/bang-theo-doi-giao-vien.md (bảng theo dõi của giáo viên).
+#
+# Deploy: giáo viên nối repo của nhóm với project Pages qua Dashboard
+# (Connect to Git) — merge vào main là tự deploy, học viên không deploy
+# bằng lệnh. Framework preset None, Build command để trống, Build output
+# directory là "public" (xem docs/setup-windows.md phần giáo viên).
 # Chỉ thư mục public/ mới thành trang web công khai — docs/, migrations/,
 # scripts/ và AGENTS.md KHÔNG bị publish thành đường link.
 #
-# Deploy qua CLI (điền tên project Pages thật của nhóm):
+# Deploy qua CLI (CHỈ GIÁO VIÊN, khi cần):
 #   npx --yes wrangler pages deploy public --project-name <ten-project-cua-nhom>
 #
-# Tên project Pages: mặc định là tên khung mẫu. Trước khi deploy bằng
-# CLI mà không kèm --project-name, đổi tên này thành tên project Pages
-# thật của nhóm (xem README mục đổi tên). Deploy qua Dashboard không
-# dùng tên này mà dùng tên project con đã tạo trên Dashboard.
+# Tên project Pages: GIÁO VIÊN điền tên project thật của nhóm vào bản copy
+# của repo nhóm (template giữ tên khung mẫu làm chỗ giữ sẵn). Học viên
+# không tự đổi tên này. Deploy qua Dashboard dùng tên project đã tạo
+# trên Dashboard, không đọc tên trong file này.
 name = "khung-san-pham-hoc-vien"
 pages_build_output_dir = "public"
 compatibility_date = "2026-10-25"
 
-# --- Database D1 (Stage 1 trở đi) ---
-# Tạo database rồi dán database_id và database_name thật vào đây:
+# --- Database D1 (mỗi nhóm một database, giáo viên tạo) ---
+# GIÁO VIÊN tạo database rồi dán database_name và database_id thật vào
+# bản copy của repo nhóm TRƯỚC KHI nối Git (xem docs/setup-windows.md
+# phần "Giáo viên chuẩn bị trước"):
 #   npx --yes wrangler d1 create khung-<ten-nhom>
-# Chưa điền database_id thì trang vẫn chạy bằng public/data/changelog.json
-# (Stage 0); đừng cố deploy Functions khi database_id còn là TO-FILL.
+# TUYỆT ĐỐI KHÔNG nối Git khi database_id còn là TO-FILL — deploy đầu
+# tiên sẽ kèm Functions gắn binding giả, trang nhật ký lỗi thay vì hiện
+# mục ví dụ. Khi database_id còn TO-FILL, bản copy này chưa sẵn sàng
+# để nối Git; trang chỉ chạy đúng bằng public/data/changelog.json khi
+# chạy tĩnh hoặc dev local.
 [[d1_databases]]
 binding = "DB"
 database_name = "TO-FILL"
@@ -28,6 +41,6 @@ database_id = "TO-FILL"
 
 # --- Khóa giáo viên (Stage 2) ---
 # TEACHER_KEY KHÔNG viết vào file này, không commit vào repo.
-# Đặt bằng lệnh (mỗi project Pages một lần, giáo viên tự gõ trực tiếp
-# trên máy học viên — xem docs/setup-windows.md phần Stage 1/2):
+# GIÁO VIÊN đặt bằng lệnh, một lần cho mỗi project Pages, từ máy giáo
+# viên (xem docs/setup-windows.md phần "Giáo viên chuẩn bị trước"):
 #   npx --yes wrangler pages secret put TEACHER_KEY --project-name <ten-project-cua-nhom>

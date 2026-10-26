@@ -3,13 +3,17 @@
 > ⚠️ **CẢNH BÁO QUAN TRỌNG NHẤT: hạn mức tính theo TÀI KHOẢN, không tính
 > theo từng project.**
 >
-> Nếu một tài khoản giáo viên chứa project của cả lớp, tất cả học viên
-> **dùng chung** 100.000 request/ngày, 500 lượt build/tháng và các mức D1
-> bên dưới. Lớp 8 học viên mà deploy dồn dập hoàn toàn có thể cạn lượt
-> build trong tháng.
+> Mô hình đã chốt: **MỘT tài khoản Cloudflare do giáo viên đứng tên
+> (gói miễn phí, không cần thẻ), mỗi nhóm một project Pages + một
+> database D1 riêng trong tài khoản đó.** Học viên không tạo tài khoản
+> Cloudflare. Vì vậy cả lớp **dùng chung** 100.000 request/ngày, 500 lượt
+> build/tháng và các mức D1 bên dưới.
 >
-> **Khuyến nghị: mỗi học viên dùng tài khoản Cloudflare MIỄN PHÍ của riêng
-> mình** (đăng ký không cần thẻ). Tài khoản giáo viên chỉ dùng để demo.
+> Với 2 nhóm thì mức này vẫn dư dả: 500 lượt build/tháng chia cho 2
+> nhóm, mỗi nhóm ~250 lượt/tháng — lớp học deploy theo nhịp PR/merge
+> không chạm tới mức đó nếu không deploy dồn dập vô tội vạ. Giáo viên
+> xem mục Usage mỗi tuần trong thời gian lớp deploy nhiều.
+>
 > Ở gói Free không gắn thẻ, vượt hạn mức thì request bị lỗi cho tới khi
 > reset — **không phát sinh hóa đơn bất ngờ**.
 
@@ -93,9 +97,11 @@ dòng. Vì vậy bảng `changelog` đã có index theo ngày (`migrations/0001_
 - Ảnh/video nặng đưa thẳng vào repo: file tối đa 25 MiB, deploy tối đa
   20.000 file. Ảnh sản phẩm nên nén nhỏ trước khi đưa lên; video nên để
   link ngoài (YouTube) thay vì nhét vào repo.
-- Cả lớp deploy dồn vào một tài khoản: 500 lượt build/tháng chia cho 8
-  người chỉ còn ~60 lượt/người/tháng — deploy liên tục khi sửa lỗi vặt sẽ
-  cạn nhanh. Mỗi người một tài khoản thì mỗi người có đủ 500 lượt.
+- Cả lớp deploy dồn vào một tài khoản giáo viên: 500 lượt build/tháng
+  chia cho 2 nhóm, mỗi nhóm ~250 lượt/tháng — deploy liên tục khi sửa
+  lỗi vặt (mỗi lần sửa lại merge một PR mới) vẫn có thể cạn nếu cả lớp
+  cùng dồn vào cuối buổi. Quy tắc: gom sửa rồi mới merge, đừng merge
+  từng lỗi vặt một.
 - Chạy tác vụ nặng trên Functions (xử lý ảnh, vòng lặp lớn): CPU chỉ
   10 ms/lần chạy, việc nặng sẽ bị ngắt giữa chừng.
 
