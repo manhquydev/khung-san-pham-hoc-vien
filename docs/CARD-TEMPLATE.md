@@ -8,20 +8,24 @@
 
 [2–3 câu: việc này là gì, vì sao cần, người dùng sẽ thấy gì thay đổi.]
 
+## Người kiểm chứng
+
+[Ai kiểm tra thẻ này xong: tên người kiểm chứng + ngày kiểm chứng. Theo
+khóa học, giáo viên là người review PR trước khi merge.]
+
 ## Tiêu chí nghiệm thu (làm xong thì kiểm tra từng dòng)
 
 - [ ] Mở đường link preview trên điện thoại: tính năng dùng được, không vỡ bố cục.
 - [ ] Mở đường link preview trên máy tính: tính năng dùng được.
-- [ ] Đã thêm 1 mục nhật ký bằng lời dễ hiểu cho phụ huynh. Cách ghi theo
-      đúng stage, nguồn duy nhất là `AGENTS.md` mục 4: Stage 0 ghi vào
-      `public/data/changelog.json`; Stage 1 trở đi ghi qua POST
-      `/api/changelog` kèm khóa giáo viên; sau khi lên D1 không sửa file
+- [ ] Đã soạn nội dung mục nhật ký trong mô tả PR (giáo viên đăng sau
+      khi merge): 1 mục bằng lời dễ hiểu cho phụ huynh. Cách ghi theo
+      nguồn duy nhất là `AGENTS.md` mục 4: sau khi lên D1 không sửa file
       JSON nữa.
 
 ## Bằng chứng xong
 
 - Đường link preview:
-- Mục nhật ký đã thêm ngày (YYYY-MM-DD):
+- Nội dung mục nhật ký đã soạn (ngày YYYY-MM-DD, 1 trong 4 nhãn):
 
 ## Nhìn lại (ghi sau khi xong)
 

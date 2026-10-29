@@ -11,35 +11,53 @@ bài học riêng, làm xong stage trước mới sang stage sau. Học viên n�
 > nền tảng nào — cả lớp dùng chung hạn mức của tài khoản giáo viên, với
 > 2 nhóm thì vẫn dư dả.
 
-## Stage 0 — Trang tĩnh + file JSON (bắt đầu ở đây)
+## Stage 0 — Trang đã chạy trên Pages với Functions + D1 (bắt đầu ở đây)
 
 - **Có gì:** `public/index.html`, `public/nhat-ky.html`,
-  `public/nhat-ky.js` đọc `public/data/changelog.json`, hiển thị nhật ký
-  theo ngày, lời dễ hiểu cho phụ huynh.
-- **Thay đổi so với trước:** không có — đây là bản khung v1.
+  `public/nhat-ky.js` gọi `/api/changelog` trước, hiển thị nhật ký
+  theo ngày, lời dễ hiểu cho phụ huynh. File
+  `public/data/changelog.json` vẫn còn trong repo nhưng chỉ là
+  **dự phòng khi API không dùng được** — không phải nguồn chính.
+- **Vì sao không còn là "tĩnh + JSON":** trước khi học viên clone,
+  giáo viên đã làm xong phần chuẩn bị (xem `docs/setup-windows.md`
+  phần 0): tạo database D1, điền `database_id` vào `wrangler.toml`,
+  chạy migration (`migrations/0001_changelog.sql`) + seed
+  (`migrations/seed.sql`) trên database thật, đặt `TEACHER_KEY`, nối
+  repo nhóm với project Pages. Nên deploy đầu tiên đã có Functions +
+  D1, trang nhật ký đọc từ D1 ngay từ buổi đầu.
 - **Kiểm chứng:** giáo viên đã nối repo nhóm với project Pages qua
-  Dashboard ở phần chuẩn bị (xem `docs/setup-windows.md` phần 0) — merge
-  vào `main` là tự deploy; mở đường link `*.pages.dev`, mở trang Nhật ký
-  thấy 3 mục ví dụ từ database của nhóm.
-- **Tốn hạn mức:** gần như 0. File tĩnh không giới hạn request/băng thông.
-  Chỉ tốn lượt build (500 lượt/tháng/tài khoản).
+  Dashboard ở phần chuẩn bị — merge vào `main` là tự deploy; mở đường
+  link `*.pages.dev`, mở trang Nhật ký thấy 3 mục ví dụ từ database
+  của nhóm.
+- **Tốn hạn mức:** mỗi lần mở trang Nhật ký = 1 request Workers (gọi
+  API trước). File tĩnh không giới hạn request/băng thông. Chỉ tốn
+  lượt build (500 lượt/tháng/tài khoản).
 
-## Stage 1 — Functions đọc từ database D1
+## Stage 1 — Hiểu và tập trên máy mình cái đã chạy sẵn trên production
 
-- **Thay đổi:** giáo viên tạo database D1 của nhóm, điền `database_id`
-  vào bản copy `wrangler.toml` của repo nhóm và chạy migration
-  (`migrations/0001_changelog.sql`) + seed (`migrations/seed.sql`) trên
-  database thật — tất cả đã làm ở phần chuẩn bị (xem
-  `docs/setup-windows.md` phần 0). Học viên tập chạy migration trên
-  database **local** của máy mình, không chạy lệnh remote. Trang nhật ký
-  **tự động** gọi `/api/changelog` trước, không cần sửa
+- **Thay đổi:** không có thay đổi nào trên production ở stage này —
+  D1, migration, seed và Functions đã có từ phần chuẩn bị (xem
+  `docs/setup-windows.md` phần 0). Stage 1 là lúc học viên HIỂU cơ chế
+  đang chạy sẵn đó và TẬP trên máy mình: chạy migration trên database
+  **local**, không chạy lệnh remote. Trang nhật ký **đã** gọi
+  `/api/changelog` trước từ deploy đầu, không cần sửa
   `public/nhat-ky.js`.
+- **Ai ghi mục nhật ký trong khoảng từ Stage 1 tới Stage 2:** học sinh
+  chỉ SOẠN nội dung mục (tiêu đề + mô tả + 1 trong 4 nhãn) trong mô tả
+  PR; **giáo viên là người POST mục đó lên production sau khi merge**
+  (xem `AGENTS.md` mục 4). Học sinh không tự POST lên production vì
+  không giữ `TEACHER_KEY`, và từ khi đã lên D1 thì không sửa file JSON
+  nữa. Quy tắc này áp dụng cho mọi PR đã merge từ khi D1 lên sóng
+  (HP1 buổi 8) tới khi lớp học POST ở Stage 2 (HP1 buổi 10).
 - **Kiểm chứng:** mở `/api/health` thấy `d1_configured: true`; mở trang
-  Nhật ký thấy đúng 3 mục ví dụ; đổi tên tạm
+  Nhật ký thấy đúng 3 mục ví dụ. Bài kiểm chứng API-first sau đây
+  **do GIÁO VIÊN làm, học viên không deploy:** đổi tên tạm
   `public/data/changelog.json` thành `changelog.json.bak`, deploy thử,
-  thấy trang vẫn hiện đủ mục — chứng tỏ trang đang đọc từ D1 thật, không
-  còn đọc file cũ — rồi đổi tên lại ngay. **Không bao giờ xóa hẳn file
-  dự phòng.** Khi test API trên máy, nhớ quirk: `npx --yes wrangler d1 migrations
+  thấy trang vẫn hiện đủ mục — chứng tỏ trang đang đọc từ D1 thật,
+  không còn đọc file cũ — rồi đổi tên lại ngay. **Không bao giờ xóa
+  hẳn file dự phòng.** Bài này chứng minh trang đọc API trước, không
+  phải là "chuyển stage" — stage không đổi vì D1 đã chạy từ đầu. Khi
+  test API trên máy, nhớ quirk: `npx --yes wrangler d1 migrations
   apply DB --local` và `npx --yes wrangler pages dev --d1` dùng hai file database
   local khác nhau, nên phải seed đúng store mà dev server đang dùng
   (xem `docs/setup-windows.md` phần Stage 1/2).
@@ -114,10 +132,10 @@ chưa vững (xem mục "Khi nào thì KHÔNG lên stage tiếp theo?" bên dư�
 | Stage | Buổi học gợi ý | Vì sao đặt ở đó |
 |---|---|---|
 | Stage 0 — tĩnh + JSON, deploy đầu | HP1 buổi 1 (tạo repo, cài máy) → HP1 buổi 5 (M0: deploy "hello" lên môi trường kiểm thử) | Buổi 1 lập repo và quy trình, buổi 5 là lần đầu sản phẩm có URL thật — đúng lúc khung tĩnh phát huy tác dụng. |
-| Stage 1 — Functions đọc D1 | HP1 buổi 8 (M3: giỏ hàng thử + phần phía máy chủ) | Buổi 8 là lần đầu khung chương trình nhắc tới phía máy chủ (khung Pages Function mẫu + `schema.sql`); học viên đã có M1–M2 tĩnh để gắn database vào. |
+| Stage 1 — Functions đọc D1 | Không có buổi học riêng: đây là trạng thái deploy đã có từ trước buổi 1 (giáo viên chuẩn bị ở phần 0); học viên TẬP và HIỂU nó ở HP1 buổi 8 khi học phía máy chủ | Buổi 8 là lần đầu khung chương trình dạy phía máy chủ (bảng orders, binding `ORDERS_DB`), nên là lúc thích hợp để học viên hiểu cơ chế API/D1 đã chạy sẵn từ đầu khóa — chứ buổi 8 không dạy mới nội dung Stage 1 (API changelog, migration, health). |
 | Stage 2 — ghi qua API có khóa | HP1 buổi 10 (hoàn thiện sản phẩm, không học kiến thức mới) | Buổi 10 không nhồi kiến thức mới nên có thời gian chuẩn hóa quy trình ghi nhật ký; từ đây mục nhật ký đi qua API thay vì sửa file. |
-| Stage 3 — tính năng riêng | HP1 buổi 6–8 (M1–M3) và HP2 buổi 5–8 (graph, MCP, đa agent, kiểm thử & QA) | Đây vốn là các buổi build tính năng của từng nhóm; khung chỉ quy định cách thêm bảng (migration mới) và Function mới. |
-| Stage 4 — R2 / KV / đăng nhập thật | HP2 buổi 8 (nhánh mở rộng tự chọn) và HP2 buổi 10–11 (hoàn thiện, tự tạo skill/hook) | Chỉ dành cho nhóm đã vững; đăng nhập thật cần giáo viên duyệt thiết kế trước vì liên quan tới thông tin học viên. |
+| Stage 3 — tính năng riêng | HP1 buổi 8 (bảng orders) và HP2 buổi 5–8 (graph, MCP, đa agent, kiểm thử & QA) | HP1 buổi 6–7 là tĩnh (trang chủ, danh mục + file dữ liệu), chỉ buổi 8 mới thêm bảng và Function; khung chỉ quy định cách thêm bảng (migration mới) và Function mới. |
+| Stage 4 — R2 / KV / đăng nhập thật | HP2 buổi 8 (nhánh mở rộng tự chọn) và HP2 buổi 10–11 (hoàn thiện, tự tạo skill/hook) | Chỉ dành cho nhóm đã vững; lưu ý nội dung mặc định của nhánh mở rộng HP2 buổi 8 trong khóa là thanh toán sandbox — R2/KV/đăng nhập thật chỉ là phương án mở rộng, không phải nội dung mặc định của buổi đó. Đăng nhập thật cần giáo viên duyệt thiết kế trước vì liên quan tới thông tin học viên. |
 
 Lưu ý: Stage 0–2 là đường đi chung bắt buộc của khung; Stage 3–4 diễn
 ra trong chính các buổi build của khóa, không phải buổi riêng.

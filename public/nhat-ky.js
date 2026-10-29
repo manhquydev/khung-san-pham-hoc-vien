@@ -13,8 +13,26 @@
 (function () {
   var timeline = document.getElementById("timeline");
 
+  function isValidDate(s) {
+    // Ngày thật trên lịch, không chỉ đúng dạng chữ ("2026-02-30" đúng
+    // dạng nhưng không phải ngày thật).
+    if (typeof s !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(s)) { return false; }
+    var parts = s.split("-");
+    var y = parseInt(parts[0], 10);
+    var m = parseInt(parts[1], 10);
+    var d = parseInt(parts[2], 10);
+    var dt = new Date(Date.UTC(y, m - 1, d));
+    return (
+      dt.getUTCFullYear() === y &&
+      dt.getUTCMonth() === m - 1 &&
+      dt.getUTCDate() === d
+    );
+  }
+
   function formatDate(iso) {
-    // iso: "YYYY-MM-DD" -> "ngày D tháng M năm YYYY"
+    // iso: "YYYY-MM-DD" -> "ngày D tháng M năm YYYY". Ngày sai định dạng
+    // thì giữ nguyên chữ gốc (mục sai đã bị bỏ qua ở render, xem dưới).
+    if (!isValidDate(iso)) { return iso; }
     var parts = iso.split("-");
     var y = parseInt(parts[0], 10);
     var m = parseInt(parts[1], 10);
@@ -31,6 +49,15 @@
   }
 
   function render(entries) {
+    // Mục sai ngày thì bỏ qua và ghi rõ tên mục sai (đừng render thành
+    // "ngày NaN tháng NaN năm NaN" khó hiểu).
+    entries = entries.filter(function (e) {
+      if (!isValidDate(e.date)) {
+        console.warn("Bỏ qua mục nhật ký sai ngày: " + e.title);
+        return false;
+      }
+      return true;
+    });
     // Mới nhất trước.
     entries.sort(function (a, b) {
       if (a.date < b.date) { return 1; }
@@ -56,7 +83,13 @@
         html += '<p><span class="tag">' + escapeHtml(e.category) + "</span></p>";
         html += "<p>" + escapeHtml(e.description) + "</p>";
         if (e.pr_url) {
-          html += '<p><a href="' + escapeHtml(e.pr_url) + '">Xem chi tiết kỹ thuật (dành cho thầy cô) &rarr;</a></p>';
+          // Chỉ giữ đường link http/https. Link lạ (ví dụ javascript:)
+          // từ file JSON tự sửa tay thì bỏ href, chỉ giữ chữ, không cho bấm.
+          if (/^https?:\/\//.test(e.pr_url)) {
+            html += '<p><a href="' + escapeHtml(e.pr_url) + '">Xem chi tiết kỹ thuật (dành cho thầy cô) &rarr;</a></p>';
+          } else {
+            html += "<p>" + escapeHtml(e.pr_url) + "</p>";
+          }
         }
         html += "</article>";
       });
@@ -109,7 +142,11 @@
   fetchApi()
     .then(function (result) {
       if (result.fallback) { return fetchJsonFile().then(render); }
-      if (!Array.isArray(result.data)) { throw new Error("API không trả về danh sách"); }
+      if (!Array.isArray(result.data)) {
+        var err = new Error("API không trả về danh sách");
+        err.notArray = true;
+        throw err;
+      }
       render(result.data);
     })
     .catch(function (err) {
@@ -124,6 +161,13 @@
         // Lỗi HTTP khác (không phải 404/503 — hai mã này đã được xử lý
         // ở fetchApi) cũng không che bằng file JSON.
         console.warn("API nhật ký báo lỗi HTTP " + err.status + ": kiểm tra Functions đã deploy chưa.");
+        showParentError();
+        return;
+      }
+      if (err && err.notArray) {
+        // API trả 200 nhưng body không phải danh sách: đây là lỗi thật
+        // của Functions, báo lỗi như 500, KHÔNG dùng file JSON che lỗi.
+        console.warn("API nhật ký trả về không phải danh sách: kiểm tra Functions /api/changelog, không dùng file JSON che lỗi.");
         showParentError();
         return;
       }

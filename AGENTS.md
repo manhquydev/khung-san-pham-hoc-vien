@@ -13,6 +13,12 @@
   → Deploy → Verify-live → Retro`.
 - Nếu máy đã cài skill flow, dùng đúng skill đó. Nếu chưa cài, làm theo bản rút gọn
   trong `docs/FLOW-GUIDE.md` — không tự bịa ra quy trình khác.
+- **Đừng lẫn hai chữ "skill":** "skill flow" ở đây là skill của agent
+  FlowSkill chạy quy trình trên, khác với "skill OMP" là skill học viên
+  tự tạo/cài trong OMP để làm bài (khóa dạy ở HP2). Từ vựng quy trình
+  nối sang từ của khóa như sau (bảng nối đầy đủ ở giáo án HP1 buổi 3):
+  PRD = bản mô tả sản phẩm (SPEC), ADR = 1–3 dòng quyết định kèm lý do,
+  Contract = tiêu chí xong, Cards = thẻ việc.
 - **Agent luôn nói rõ mình đang ở đâu:** đầu mỗi câu trả lời, ghi rõ stage
   hiện tại và cổng vừa qua/chưa qua (ví dụ: "Đang ở stage Build, cổng Review
   chưa qua vì chưa có preview"). Cuối mỗi thẻ việc, ghi tiến độ stage vào
@@ -50,14 +56,23 @@
   - `category`: một trong 4 nhãn: `Giao diện`, `Tính năng mới`, `Sửa lỗi`,
     `Cải tiến`.
   - `pr_url`: đường link tới PR đó, nếu có.
-- **Cách thêm mục tùy theo stage** (xem `docs/roadmap.md`):
-  - Stage 0 (chưa có D1): thêm vào `public/data/changelog.json`.
-  - Stage 1 trở đi: ghi qua API `POST /api/changelog` (kèm khóa giáo viên
-    từ Stage 2). Trang nhật ký tự đọc từ D1 trước, chỉ khi API không dùng
-    được mới dùng file JSON — nên đừng sửa file JSON nữa sau khi đã lên D1,
-    tránh hai nguồn dữ liệu lệch nhau.
+- **Cách thêm mục, người làm đã chốt** (xem `docs/roadmap.md`):
+  - Học sinh viết sẵn nội dung mục (tiêu đề + mô tả + 1 trong 4 nhãn)
+    trong mô tả PR. Học sinh không tự ghi lên production vì không giữ
+    khóa giáo viên.
+  - **Giáo viên POST mục đó lên production sau khi merge** bằng API
+    `POST /api/changelog` kèm `TEACHER_KEY`. Từ Stage 1 tới Stage 2
+    (HP1 buổi 8 tới buổi 10) cũng theo quy tắc này: giáo viên POST cho
+    các PR đã merge, học sinh chỉ soạn nội dung.
+  - Trường hợp chưa có D1 (chỉ khi giáo viên chưa làm xong phần chuẩn
+    bị): thêm vào `public/data/changelog.json`. Sau khi đã lên D1 thì
+    không sửa file JSON nữa, tránh hai nguồn dữ liệu lệch nhau. Trang
+    nhật ký tự đọc từ D1 trước, chỉ khi API không dùng được mới dùng
+    file JSON.
 - Checklist này nằm trong mẫu PR (`.github/pull_request_template.md`) và agent
-  phải kiểm tra nó trước khi xin review. Thiếu mục nhật ký = PR chưa xong.
+  phải kiểm tra nó trước khi xin review. Thiếu nội dung mục nhật ký
+  trong mô tả PR = PR chưa xong (giáo viên đăng mục lên production sau
+  khi merge).
 
 ## 5. Quy tắc database, secret và môi trường Windows
 

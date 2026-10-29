@@ -15,13 +15,18 @@ phần 0, "Giáo viên chuẩn bị trước").
 
 ## Theo dõi theo nhóm
 
-| Nhóm | Repo GitHub của nhóm | Tên project Pages | Tên database D1 | `database_id` đã điền vào `wrangler.toml` | `TEACHER_KEY` đã đặt bằng `secret put` | Đã nối Git (Dashboard) | Đã chạy migration + seed remote | Hồ sơ đồng ý phụ huynh (tham chiếu) |
-|---|---|---|---|---|---|---|---|---|
-| Nhóm 1 | | | | ☐ | ☐ | ☐ | ☐ | |
-| Nhóm 2 | | | | ☐ | ☐ | ☐ | ☐ | |
+| Nhóm | Repo GitHub của nhóm | Tên project Pages | Tên database D1 | `database_id` đã điền vào `wrangler.toml` | `TEACHER_KEY` đã đặt bằng `secret put` | `ADMIN_CODE` đã đặt cho nhóm (mã mở trang quản trị đơn) | Đã nối Git (Dashboard) | Đã chạy migration + seed remote | Hồ sơ đồng ý phụ huynh (tham chiếu) |
+|---|---|---|---|---|---|---|---|---|---|
+| Nhóm 1 | | | | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| Nhóm 2 | | | | ☐ | ☐ | ☐ | ☐ | ☐ | |
 
 Thêm dòng nếu lớp có hơn 2 nhóm. Mỗi nhóm một dòng — không dùng chung
-project hay database giữa các nhóm.
+project hay database giữa các nhóm. **Mỗi nhóm một `TEACHER_KEY`
+riêng, không dùng chung** — lộ khóa nhóm này không được mở cổng ghi
+của nhóm kia. **`ADMIN_CODE` và `TEACHER_KEY` là hai khóa khác nhau,
+không dùng chung giá trị** (xem hộp hai khóa trong `README.md`):
+`ADMIN_CODE` mở trang quản trị đơn hàng (học sinh được biết),
+`TEACHER_KEY` bảo vệ cổng ghi nhật ký (chỉ giáo viên giữ).
 
 ## Checklist trước buổi đầu (mỗi nhóm)
 
@@ -36,12 +41,17 @@ project hay database giữa các nhóm.
    thấy trang chủ, trang Nhật ký đủ 3 mục ví dụ, `/api/health` báo
    `d1_configured: true`.
 7. ☐ Đường link repo + đường link `*.pages.dev` đã đưa cho nhóm.
+8. ☐ Template đã mở công khai cho lớp trước khi đưa link cho nhóm
+   (nếu chưa mở, học viên gặp 404 ở bước clone).
 
 ## Cuối khóa — thu hồi và dọn dẹp
 
 1. ☐ Đổi hoặc xóa `TEACHER_KEY` của từng project (Dashboard → Pages
    project → Settings → Environment variables, hoặc đặt lại bằng
-   `secret put` với giá trị mới rồi thu hồi giá trị cũ).
+   `secret put` với giá trị mới rồi thu hồi giá trị cũ). Sau khi đổi,
+   kiểm chứng khóa cũ đã chết: thử POST bằng khóa cũ, phải nhận 401;
+   thử GET `/api/health` vẫn thấy `teacher_key_configured` là true
+   với khóa mới.
 2. ☐ Ngắt kết nối Git của project nếu không dùng tiếp, hoặc giữ nguyên
    nếu nhóm được giữ sản phẩm — quyết theo thông báo phụ huynh
    (`docs/thong-bao-phu-huynh.md`).

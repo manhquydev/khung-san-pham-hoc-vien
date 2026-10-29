@@ -11,7 +11,11 @@ nhật ký phát triển.
 
 1. Repo này được bật chế độ Template trên GitHub (riêng tư cho tới khi khóa
    học bắt đầu, giáo viên mở công khai khi tới thời điểm triển khai).
-2. Mỗi nhóm bấm **Use this template** → tạo repo riêng của nhóm → clone về máy.
+2. Giáo viên tạo repo của nhóm từ template trong Organization của lớp
+   trước buổi 1, thêm học sinh vào repo (xem `docs/setup-windows.md`
+   phần 0, bước G0). Học viên **không** tự bấm **Use this template** —
+   repo tự tạo sẽ không nối Pages và không chạy được; học viên chỉ
+   clone đường link giáo viên đưa.
 3. Học viên đổi tên sản phẩm ở 2 chỗ (xem phần học viên bên dưới) rồi bắt đầu
    bằng 1 câu prompt thường — agent tự đưa vào quy trình FlowSkill, không cần
    gõ `/flow`.
@@ -29,6 +33,19 @@ nhật ký phát triển.
   chung 100.000 request/ngày và 500 lượt build/tháng (xem
   `docs/gioi-han-free.md`). Với 2 nhóm thì mức này vẫn dư dả; giáo viên
   xem mục Usage mỗi tuần trong thời gian lớp deploy nhiều.
+
+### Hai khóa khác nhau, không dùng chung giá trị
+
+- **`ADMIN_CODE`** — mã mở trang quản trị đơn hàng (HP1 buổi 8, mỗi
+  nhóm một mã, học sinh được biết, chỉ gửi qua header/thân POST, xoay
+  sau khóa).
+- **`TEACHER_KEY`** — khóa bảo vệ cổng ghi nhật ký qua POST
+  `/api/changelog` (chỉ giáo viên giữ; học sinh không giữ trừ lúc tập
+  local có thu hồi).
+- Hai khóa bảo vệ hai tính năng khác nhau nên **không dùng chung giá
+  trị**: lộ một khóa không được mở cổng của khóa còn lại. Ghi dấu "đã
+  đặt" của cả hai khóa vào `docs/bang-theo-doi-giao-vien.md` (không
+  bao giờ ghi giá trị khóa vào đó).
 
 ### Giáo viên chuẩn bị trước khi học viên clone (bắt buộc, theo thứ tự)
 
@@ -71,12 +88,17 @@ Khung v1 chỉ là trang tĩnh để học viên lên mạng được trong vài
 nâng cấp này đã đưa Stage 1 và Stage 2 vào repo (xem chi tiết, cách kiểm
 chứng từng stage và mức tốn hạn mức trong `docs/roadmap.md`):
 
-1. **Stage 0 — tĩnh + JSON:** trang đọc `public/data/changelog.json`.
-   File JSON này vẫn giữ lại làm dự phòng: khi chưa có D1, trang tự dùng nó.
+1. **Stage 0 — trang đã chạy trên Pages với Functions + D1 do giáo
+   viên chuẩn bị sẵn:** trang gọi `/api/changelog` trước. File JSON
+   này vẫn giữ lại làm dự phòng: khi API không dùng được, trang tự
+   dùng nó.
 2. **Stage 1 — Functions đọc D1:** `functions/api/changelog.js` (GET) đọc
    bảng `changelog` từ D1; `functions/api/health.js` báo database đã cấu
    hình chưa. Trang nhật ký tự gọi API trước, chỉ khi API không dùng được
    mới dùng file JSON. Tạo bảng bằng migration, không sửa tay trên Dashboard.
+   Ranh giới với bảng orders: file `schema.sql` là file giáo viên chạy
+   một lần cho bảng orders (HP1 buổi 8), mọi thay đổi bảng sau đó — kể
+   cả orders — đều qua migration mới.
 3. **Stage 2 — ghi qua API có khóa giáo viên:** POST `/api/changelog`
    cần header `x-teacher-key` khớp secret `TEACHER_KEY` (đặt bằng
    `npx --yes wrangler pages secret put`, không viết vào repo). Đây là cổng giữ lớp
@@ -97,16 +119,17 @@ chứng từng stage và mức tốn hạn mức trong `docs/roadmap.md`):
 - **Làm thẻ việc (Cards → Verify): cổng tự qua khi kiểm chứng máy đạt**,
   và **giáo viên review PR là cổng người cuối cùng trước khi merge**.
 - Mọi PR đã merge đều phải có 1 mục nhật ký viết bằng lời dễ hiểu cho phụ
-  huynh (xem `AGENTS.md` mục 4 — cách ghi theo đúng stage: Stage 0 ghi
-  vào `public/data/changelog.json`; Stage 1 trở đi ghi qua POST
-  `/api/changelog` kèm khóa giáo viên; sau khi lên D1 không sửa file
-  JSON nữa).
+  huynh (xem `AGENTS.md` mục 4 — học sinh soạn nội dung mục trong mô tả
+  PR, giáo viên đăng lên production sau khi merge; sau khi lên D1 không
+  sửa file JSON nữa).
 
 ## PHẦN DÀNH CHO HỌC VIÊN
 
 ### Bắt đầu
 
-1. Bấm **Use this template** để tạo repo riêng của nhóm, rồi clone về máy.
+1. Clone repo của nhóm theo đường link giáo viên đã đưa (giáo viên tạo
+   sẵn repo trong Organization trước buổi 1; học viên không tự bấm
+   **Use this template**).
 2. Học viên Windows làm theo `docs/setup-windows.md` từng bước: phần Lần
    đầu, Stage 0 (cài Git, Node.js LTS, VS Code → clone → chạy
    `scripts\check-env.ps1` → code → mở PR → kiểm tra preview → merge →

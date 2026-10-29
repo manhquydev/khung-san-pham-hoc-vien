@@ -33,8 +33,10 @@ function isValidDate(s) {
   );
 }
 
-// So sánh khóa theo cách không để lộ độ dài khớp qua thời gian đo được
-// (cổng giữ lớp học, không phải hệ thống đăng nhập thật — xem cuối file).
+// So sánh khóa từng ký tự (không dừng sớm giữa chừng), nhưng hàm vẫn trả
+// false ngay khi hai khóa khác độ dài — nên độ dài của khóa đúng vẫn có
+// thể lộ qua thời gian đo được. Rò rỉ này được chấp nhận vì đây chỉ là
+// cổng giữ lớp học, không phải hệ thống đăng nhập thật (xem cuối file).
 function keysEqual(a, b) {
   if (typeof a !== "string" || typeof b !== "string") { return false; }
   if (a.length !== b.length) { return false; }

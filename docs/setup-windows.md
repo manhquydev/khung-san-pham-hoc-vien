@@ -31,6 +31,14 @@ Phần này giáo viên làm một lần cho mỗi nhóm, theo đúng thứ tự
 Học viên bỏ qua toàn bộ phần 0. Ghi lại mọi project vào
 `docs/bang-theo-doi-giao-vien.md` (không bao giờ ghi giá trị khóa vào đó).
 
+## Bước G0 — Tạo repo nhóm trong Organization TRƯỚC buổi 1
+
+Giáo viên tạo repo của nhóm từ template (bấm **Use this template**)
+trong Organization của lớp, thêm học sinh vào repo, rồi mới làm các
+bước G1–G5 dưới đây. **Học viên KHÔNG tự bấm Use this template tạo
+repo riêng** — repo tự tạo sẽ không nối Pages, `wrangler.toml` còn
+TO-FILL, script kiểm tra sẽ FAIL, và nhóm sẽ có hai repo chồng nhau.
+
 ## Bước G1 — Tạo project Pages + database D1 của nhóm
 
 Trong tài khoản Cloudflare của giáo viên (gói miễn phí, không cần thẻ):
@@ -48,6 +56,17 @@ Mở bản copy repo của nhóm, thay trong `wrangler.toml`:
   tên và id database vừa tạo ở bước G1.
 
 Commit và push thay đổi này lên nhánh `main` của repo nhóm.
+
+> **Quy tắc binding đã chốt (đọc kỹ trước HP1 buổi 8):** database D1
+> của nhóm chứa cả 2 bảng — bảng `changelog` (nhật ký, từ template)
+> và bảng `orders` (đơn hàng, thêm ở HP1 buổi 8). File
+> `wrangler.toml` của nhóm vì thế có 2 mục `[[d1_databases]]` trỏ
+> cùng 1 `database_id` đó: binding `DB` (có sẵn từ template, cho bảng
+> changelog) và binding `ORDERS_DB` (giáo viên thêm khi lớp tới HP1
+> buổi 8, cho bảng orders — xem giáo án HP1 Phụ lục F). Môi trường
+> Preview mặc định dùng cùng D1 của nhóm, không tạo D1 thứ hai; nếu
+> giáo viên muốn Preview dùng D1 riêng thì khai rõ trong
+> `[env.preview]` trước buổi 8, không để tới buổi 8 mới quyết.
 
 ## Bước G3 — Đặt khóa giáo viên cho project (Stage 2)
 
@@ -100,6 +119,13 @@ npx --yes wrangler d1 execute DB --remote --file migrations\seed.sql
 Từ đây, **merge vào `main` là tự deploy** — học viên không deploy bằng
 lệnh, không đăng nhập wrangler, không chạm vào tài khoản giáo viên.
 
+**Cài sẵn wrangler vào máy lớp trước buổi 1:** trên mỗi máy lớp, khi
+máy đang có mạng, giáo viên mở PowerShell gõ một lần
+`npx --yes wrangler --version` để wrangler được tải sẵn về máy. Buổi
+đầu script kiểm tra sẽ dùng bản đã tải sẵn, không tắc vì mạng chặn
+npm. Nếu máy chưa cài sẵn mà mạng chặn thì báo giáo viên xử lý mạng
+hoặc cài sẵn lại — học viên đừng tự tìm cách khác.
+
 ---
 
 # PHẦN 1 — Lần đầu, Stage 0 (mọi học viên làm buổi đầu)
@@ -133,6 +159,18 @@ git --version
 ```
 
 - **Kết quả đúng:** `git version 2.x.x` (số x nào cũng được).
+3. Cấu hình tên + email cho git ngay (bắt buộc trước commit đầu tiên
+   ở buổi 1 — nếu không, tới commit đầu git sẽ báo lỗi
+   "Please tell me who you are" và buổi đầu tắc):
+
+```powershell
+git config --global user.name "Tên hiển thị của con"
+git config --global user.email "email tài khoản GitHub của con"
+```
+
+Thay bằng tên hiển thị và email của chính tài khoản GitHub của con
+(hỏi ba mẹ nếu chưa rõ). Gõ xong kiểm tra lại bằng
+`git config --global --list`.
 - **Nếu lỗi** (`git không được nhận dạng...`): Git chưa vào PATH.
   PATH là danh sách thư mục mà máy tính tìm lệnh khi con gõ một lệnh —
   chưa có Git trong đó thì máy không biết lệnh `git` nằm ở đâu. Cài lại,
@@ -168,11 +206,14 @@ npm --version
 
 1. Nhờ ba mẹ/người giám hộ tạo tài khoản GitHub cùng con hoặc đồng ý cho
    con tạo; học viên dưới 13 tuổi phải có ba mẹ tạo tài khoản cùng.
-2. Trên GitHub, vào repo khung của lớp, bấm **Use this template** → tạo
-   repo riêng (đặt tên theo sản phẩm của nhóm, để chế độ Private).
-3. Bấm **Code** → copy đường link, rồi trong PowerShell gõ lệnh clone
-   bằng cách **dán đường link vừa copy vào** (đừng gõ nguyên văn ví dụ
-   dưới đây, vì `<...>` chỉ là chỗ giữ sẵn cho link thật):
+2. Giáo viên đã tạo sẵn repo của nhóm trong Organization của lớp (xem
+   phần 0, bước G0) và đưa đường link repo đó cho nhóm ở bước 0.
+   **Con KHÔNG tự bấm Use this template tạo repo riêng** — repo tự
+   tạo sẽ không nối Pages và không chạy được.
+3. Mở đường link repo nhóm giáo viên đã đưa, bấm **Code** → copy đường
+   link, rồi trong PowerShell gõ lệnh clone bằng cách **dán đường link
+   vừa copy vào** (đừng gõ nguyên văn ví dụ dưới đây, vì `<...>` chỉ
+   là chỗ giữ sẵn cho link thật):
 
 ```powershell
 git clone <dán-đường-link-vừa-copy-vào-đây>
@@ -181,8 +222,9 @@ cd <ten-repo>
 
 - **Kết quả đúng:** thư mục mới xuất hiện, bên trong có `public/index.html`,
   `public/nhat-ky.html`, `wrangler.toml`.
-- **Nếu lỗi** (trang template báo không tìm thấy, 404): repo khung chưa
-  được mở cho lớp — hỏi giáo viên, đừng tự tìm repo khác thay thế.
+- **Nếu lỗi** (trang repo báo không tìm thấy, 404): giáo viên chưa mở
+  repo của nhóm cho con — hỏi giáo viên, đừng tự tìm repo khác thay thế
+  và đừng tự bấm Use this template tạo repo mới.
 - **Nếu lỗi** (hỏi username/password khi clone repo private): lần clone
   đầu sẽ bật cửa sổ đăng nhập GitHub riêng — đăng nhập ở cửa sổ đó.
   Không bao giờ gõ mật khẩu GitHub vào PowerShell. Đăng nhập trình duyệt
@@ -286,7 +328,10 @@ tìm thấy database đó — trong khung này, binding tên là `DB`.
 
 Giáo viên đã tạo database của nhóm và điền `database_name` /
 `database_id` thật vào `wrangler.toml` ở phần 0, bước G2, trước khi học
-viên clone. **Học viên không tự tạo database, không tự điền id.**
+viên clone. **Học viên không tự tạo database, không tự điền id.** Tới
+HP1 buổi 8, giáo viên thêm binding `ORDERS_DB` trỏ cùng database này
+cho bảng orders (xem phần 0, quy tắc binding đã chốt) — database của
+nhóm chứa cả 2 bảng, không tạo database thứ hai.
 
 - **Nếu script kiểm tra báo "D1 database_id" FAIL (vẫn là TO-FILL):**
   giáo viên chưa làm xong phần 0 — báo giáo viên, đừng tự tạo database.

@@ -48,6 +48,15 @@ Write-Host ""
 $git = Get-CommandOutput @("git", "--version")
 Write-Result $git.Ok "Git" $git.Output "Cai Git for Windows: https://git-scm.com/download/win (chon Next mac dinh), dong mo lai PowerShell roi chay lai script."
 
+# 1b. Git identity — commit dau tien o buoi 1 se loi "Please tell me who
+# you are" neu chua dat ten/email. Kiem tra ngay tu buoc nay de khoi tac
+# giua buoi.
+$nameOut = Get-CommandOutput @("git", "config", "user.name")
+$emailOut = Get-CommandOutput @("git", "config", "user.email")
+$identityOk = $nameOut.Ok -and $emailOut.Ok -and $nameOut.Output -ne "" -and $emailOut.Output -ne ""
+$identityDetail = if ($identityOk) { "$($nameOut.Output) <$($emailOut.Output)>" } else { "Chua dat user.name hoac user.email" }
+Write-Result $identityOk "Git identity" $identityDetail "Chay: git config --global user.name `"Ten cua con`" ; git config --global user.email `"email lop`" (hoi giao vien neu khong biet dung email nao), roi chay lai script."
+
 # 2. Node.js >= 20
 $node = Get-CommandOutput @("node", "--version")
 $nodeOk = $false
@@ -80,7 +89,7 @@ if (Get-Command wrangler -ErrorAction SilentlyContinue) {
         $wranglerDetail = $w.Output
     }
 }
-Write-Result ($null -ne $wranglerCmd) "Wrangler" $wranglerDetail "Chay: npx --yes wrangler --version (lan dau tai ve hoi lau). Neu mang truong chan npm, nho thay co cap quyen."
+Write-Result ($null -ne $wranglerCmd) "Wrangler" $wranglerDetail "Chay: npx --yes wrangler --version (lan dau tai ve hoi lau). Neu mang truong chan npm, bao giao vien: cai san wrangler vao may lop truoc buoi 1 (xem docs/setup-windows.md phan 0), hoac mo quyen truy cap registry npm (registry.npmjs.org)."
 
 # 5. Dang nhap Cloudflare — CHI LA GHI CHU CHO GIAO VIEN, LUON DAT VOI HOC VIEN.
 # Mo hinh da chot: mot tai khoan Cloudflare do giao vien dung ten, moi nhom
@@ -132,6 +141,6 @@ if ($failCount -gt 0) {
     Write-Host "Ket qua: $failCount muc FAIL. Sua theo huong dan tren roi chay lai script." -ForegroundColor Red
     exit 1
 } else {
-    Write-Host "Ket qua: TOAN PASS. May cua con da san sang de code va mo PR (merge vao main la tu deploy, xem docs/setup-windows.md phan 1)." -ForegroundColor Green
+    Write-Host "Ket qua: TOAN PASS cho cac muc may cuc bo. May cua con da san sang de code va mo PR, NHUNG production chi duoc ket luan san sang khi 3 link kiem tra live o Buoc 7 (docs/setup-windows.md) deu dat: trang chu mo duoc, /api/health bao d1_configured true, trang nhat ky hien du 3 muc vi du." -ForegroundColor Green
     exit 0
 }

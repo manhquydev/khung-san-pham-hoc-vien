@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS changelog (
   mo_ta TEXT NOT NULL,
   loai TEXT NOT NULL,
   pr_url TEXT,
-  created_at TEXT NOT NULL DEFAULT ''
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE(tieu_de, ngay)
 );
 
 -- Trang nhật ký luôn đọc theo ngày mới nhất trước, nên đánh index theo ngày.

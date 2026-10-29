@@ -39,6 +39,18 @@ binding = "DB"
 database_name = "TO-FILL"
 database_id = "TO-FILL"
 
+# --- Binding thứ hai cho bảng đơn hàng (CHỈ BẬT KHI TỚI HP1 BUỔI 8) ---
+# D1 của nhóm chứa CẢ HAI bảng: changelog (nhật ký) và orders (đơn hàng).
+# Khi tới buổi 8, GIÁO VIÊN thêm khối dưới đây vào bản copy wrangler.toml
+# của nhóm, trỏ CÙNG database_id với binding DB ở trên (không tạo D1 mới):
+#   [[d1_databases]]
+#   binding = "ORDERS_DB"
+#   database_name = "<cung-ten-database-voi-DB>"
+#   database_id = "<cung-database_id-voi-DB>"
+# Môi trường Preview dùng đúng D1 kiểm thử của nhóm (ghi rõ tên D1 đó
+# trong checklist buổi 8 của giáo án); đừng để Preview trỏ sang D1 khác
+# mà không ghi lại. Khối này đang chú thích sẵn, chưa có hiệu lực.
+
 # --- Khóa giáo viên (Stage 2) ---
 # TEACHER_KEY KHÔNG viết vào file này, không commit vào repo.
 # GIÁO VIÊN đặt bằng lệnh, một lần cho mỗi project Pages, từ máy giáo
