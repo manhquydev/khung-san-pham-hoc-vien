@@ -44,6 +44,21 @@ không dùng chung giá trị** (xem hộp hai khóa trong `README.md`):
 8. ☐ Template đã mở công khai cho lớp trước khi đưa link cho nhóm
    (nếu chưa mở, học viên gặp 404 ở bước clone).
 
+## Sao lưu D1 định kỳ (giáo viên làm)
+
+Runbook sự cố giả định luôn có "bản sao lưu gần nhất" — bản sao lưu đó
+chỉ có nếu giáo viên xuất D1 định kỳ. Mỗi nhóm xuất một lần theo lịch
+dưới đây, từ máy giáo viên (đã đăng nhập wrangler bằng tài khoản giáo viên):
+
+```powershell
+npx --yes wrangler d1 export DB --remote --output <tên-file-sao-lưu>.sql
+```
+
+- Tần suất xuất: [giáo viên điền, ví dụ: mỗi tuần một lần]
+- Nơi lưu bản sao lưu: [giáo viên điền]
+- Lần xuất gần nhất — Nhóm 1 (ngày + tên file):
+- Lần xuất gần nhất — Nhóm 2 (ngày + tên file):
+
 ## Cuối khóa — thu hồi và dọn dẹp
 
 1. ☐ Đổi hoặc xóa `TEACHER_KEY` của từng project (Dashboard → Pages

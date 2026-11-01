@@ -17,8 +17,12 @@ tài khoản này để đưa trang web của các nhóm lên mạng. **Con khô
 tạo tài khoản nào cho việc này, và con không giữ mật khẩu hay khóa nào
 của hệ thống đưa web lên mạng.** Tài khoản duy nhất con tự giữ là tài
 khoản GitHub cá nhân — nơi lưu code và ghi lại ai đã đóng góp gì
-(giáo viên hướng dẫn tạo tài khoản này cùng ba mẹ, vì GitHub yêu cầu
-người dùng từ 13 tuổi trở lên; em dưới 13 tuổi cần ba mẹ tạo cùng).
+(giáo viên hướng dẫn tạo tài khoản này cùng ba mẹ. GitHub yêu cầu
+người dùng từ 13 tuổi trở lên; với em dưới 13 tuổi, con chỉ dùng GitHub
+khi có đủ cả hai văn bản: văn bản chấp thuận của trường/trung tâm và
+phiếu đồng ý của phụ huynh. Ba mẹ tạo tài khoản cùng con không thay thế
+được hai văn bản này — thiếu một trong hai thì con không dùng GitHub,
+giáo viên bố trí vai trò thay thế ngoài GitHub).
 
 ## Trang web có công khai không? Có tốn tiền không?
 

@@ -113,7 +113,7 @@ $missing = @()
 foreach ($f in $requiredFiles) {
     if (-not (Test-Path $f)) { $missing += $f }
 }
-Write-Result ($missing.Count -eq 0) "File khung" $(if ($missing.Count -eq 0) { "Du $($requiredFiles.Count) file" } else { "Thieu: $($missing -join ', ')" }) "Clone lai repo tu GitHub (Use this template -> git clone) va chay script o thu muc goc cua repo."
+Write-Result ($missing.Count -eq 0) "File khung" $(if ($missing.Count -eq 0) { "Du $($requiredFiles.Count) file" } else { "Thieu: $($missing -join ', ')" }) "Clone lai repo nhom tu link giao vien da dua va chay script o thu muc goc cua repo."
 
 # 7. wrangler.toml da dien database_id that chua (Stage 1)
 $dbFilled = $false

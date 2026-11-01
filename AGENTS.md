@@ -131,3 +131,27 @@
   gì, còn vướng gì — lưu vào PR hoặc nhật ký buổi của nhóm. Dòng Retro
   phải ghi rõ stage vừa xong và cổng đã qua, để giáo viên thấy được tiến
   độ flow (xem mục 1).
+
+## 9. Phần nhóm bổ sung ở HP2 buổi 2 (nhóm điền — các mục khung 1–8 giữ nguyên)
+
+Từ HP2 buổi 2, nhóm BỔ SUNG các mục dưới đây vào file này theo dự án
+của nhóm, KHÔNG viết lại hay xóa các mục khung 1–8 ở trên. Đây là phần
+của nhóm; các luật khung (cổng xác nhận, quy tắc nhật ký §4, quy tắc
+migration/secret §5) vẫn giữ nguyên hiệu lực.
+
+### 9.1. Vùng đỏ của dự án
+
+[Nhóm liệt kê các vùng code/dữ liệu "cấm chạm" của riêng dự án mình —
+ví dụ: file dữ liệu sản phẩm đã chốt, bảng đơn hàng đang chạy, khóa cấu
+hình. Ai muốn sửa vùng đỏ phải hỏi cả nhóm + giáo viên trước.]
+
+### 9.2. Vòng kiểm chứng của nhóm
+
+[Nhóm ghi rõ vòng kiểm chứng mình dùng trước khi mở PR — ví dụ: chạy
+lệnh nào, mở link nào, kiểm tra trên điện thoại ra sao, ai kiểm lại.]
+
+### 9.3. Định dạng báo cáo agent
+
+[Nhóm ghi rõ agent phải báo cáo kết quả theo định dạng nào — ví dụ:
+đã làm gì / kiểm chứng ra sao / còn vướng gì — để cả nhóm đọc hiểu
+được mà không cần hỏi lại.]

@@ -12,7 +12,7 @@
 | 1. Idea (Ý tưởng) | Nói rõ sản phẩm giúp ai, giải quyết việc gì | Viết được 1 câu: "Sản phẩm giúp [ai] làm [việc gì]". |
 | 2. Research (Tìm hiểu) | Xem 2–3 sản phẩm tương tự, ghi điều hay và điều dở | Ghi được ít nhất 2 điểm học được, có nguồn. |
 | 3. Scope (Phạm vi) | Chọn 3–5 tính năng chính, gạch bỏ phần chưa làm | Danh sách tính năng vừa sức, phần "không làm" ghi rõ. |
-| 4. PRD (Mô tả sản phẩm) | Điền `docs/SPEC-TEMPLATE.md` | Mọi mục đã điền, không còn ô trống hay chữ "sẽ tính sau". |
+| 4. PRD (Mô tả sản phẩm) | Ở buổi 3, copy `docs/SPEC-TEMPLATE.md` thành `SPEC.md` ở gốc repo rồi điền | Mọi mục trong `SPEC.md` đã điền, không còn ô trống hay chữ "sẽ tính sau". Không điền thẳng vào file mẫu `docs/SPEC-TEMPLATE.md`. |
 | 5. ADR (Quyết định kỹ thuật) | Ghi 1–3 quyết định lớn và lý do (ví dụ: dùng trang tĩnh vì đơn giản) | Mỗi quyết định có lý do và phương án đã loại bỏ. |
 | 6. Contract (Hợp đồng xong) | Chốt tiêu chí "xong" cho toàn sản phẩm | Tiêu chí đo được, không chung chung ("đẹp", "hay"). |
 | 7. Cards (Thẻ việc) | Tách sản phẩm thành thẻ việc nhỏ theo `docs/CARD-TEMPLATE.md` | Mỗi thẻ có tiêu chí nghiệm thu rõ ràng. |

@@ -17,10 +17,14 @@ lỗi thì sửa thế nào**. Làm theo đúng thứ tự, đừng nhảy bư�
 > cũ), đứng ở thư mục gốc của repo. Đường dẫn trên Windows dùng dấu `\`,
 > ví dụ `scripts\check-env.ps1`.
 >
-> **Đồng ý của phụ huynh:** Nhờ ba mẹ/người giám hộ tạo tài khoản GitHub
-> cùng con hoặc đồng ý cho con tạo; học viên dưới 13 tuổi phải có ba mẹ
-> tạo tài khoản cùng (xem bước 4). Học viên không tạo bất kỳ tài khoản
-> hạ tầng nào khác — xem tờ thông báo phụ huynh
+> **Đồng ý của phụ huynh + tài khoản GitHub dưới 13 tuổi:** GitHub yêu
+> cầu người dùng từ 13 tuổi trở lên. Với em dưới 13 tuổi, con chỉ dùng
+> GitHub khi có đủ cả hai văn bản: (i) văn bản chấp thuận của
+> trường/trung tâm; (ii) phiếu đồng ý của phụ huynh. Ba mẹ tạo tài khoản
+> cùng con KHÔNG thay thế được hai văn bản này. Thiếu một trong hai văn
+> bản thì em đó không dùng GitHub — giáo viên bố trí vai trò thay thế
+> ngoài GitHub (xem bước 4). Học viên không tạo bất kỳ tài khoản hạ
+> tầng nào khác — xem tờ thông báo phụ huynh
 > (`docs/thong-bao-phu-huynh.md`).
 
 ---
@@ -38,6 +42,15 @@ trong Organization của lớp, thêm học sinh vào repo, rồi mới làm cá
 bước G1–G5 dưới đây. **Học viên KHÔNG tự bấm Use this template tạo
 repo riêng** — repo tự tạo sẽ không nối Pages, `wrangler.toml` còn
 TO-FILL, script kiểm tra sẽ FAIL, và nhóm sẽ có hai repo chồng nhau.
+
+## Bước G0b — Bật ruleset bảo vệ nhánh `main` (trước khi học sinh clone)
+
+Ngay sau khi tạo repo nhóm (bước G0), giáo viên bật ruleset cho nhánh
+`main` trong repo nhóm (GitHub → Settings → Rules → Rulesets → New
+ruleset, áp cho nhánh `main`): chặn push thẳng lên `main`, bắt buộc mọi
+thay đổi đi qua PR và có review của giáo viên trước khi merge. Làm bước
+này TRƯỚC khi học sinh clone, để ngay từ buổi 1 repo nhóm đã có rào
+bảo vệ (xem KHUNG §4).
 
 ## Bước G1 — Tạo project Pages + database D1 của nhóm
 
@@ -59,7 +72,9 @@ Commit và push thay đổi này lên nhánh `main` của repo nhóm.
 
 > **Quy tắc binding đã chốt (đọc kỹ trước HP1 buổi 8):** database D1
 > của nhóm chứa cả 2 bảng — bảng `changelog` (nhật ký, từ template)
-> và bảng `orders` (đơn hàng, thêm ở HP1 buổi 8). File
+> và bảng `orders` (đơn hàng, tạo bằng migration
+> `migrations/0002_orders.sql` giáo viên đã chạy trước khóa; học sinh
+> chỉ đọc hiểu ở HP1 buổi 8, xem giáo án HP1 Phụ lục F.1). File
 > `wrangler.toml` của nhóm vì thế có 2 mục `[[d1_databases]]` trỏ
 > cùng 1 `database_id` đó: binding `DB` (có sẵn từ template, cho bảng
 > changelog) và binding `ORDERS_DB` (giáo viên thêm khi lớp tới HP1
@@ -112,6 +127,10 @@ npx --yes wrangler d1 execute DB --remote --file migrations\seed.sql
 ```
 
 - **Kết quả đúng:** mỗi lệnh báo thành công (applied / executed).
+- **Chỉ chạy seed một lần cho mỗi nhóm:** sau khi nhóm đã có mục nhật ký
+  thật và giáo viên đã xóa 3 mục ví dụ (xem bước S2), chạy lại
+  `seed.sql` sẽ đưa 3 mục ví dụ trở lại. Mỗi nhóm chỉ chạy seed một lần
+  ở bước này; về sau không chạy lại.
 - Sau bước này, đường link `https://<ten-project>.pages.dev/` của nhóm
   đã chạy thật: trang chủ, trang Nhật ký (3 mục ví dụ từ D1) và
   `/api/health` báo `d1_configured: true`.
@@ -205,7 +224,11 @@ npm --version
 ## Bước 4 — Lấy repo về máy (clone trước, kiểm tra sau)
 
 1. Nhờ ba mẹ/người giám hộ tạo tài khoản GitHub cùng con hoặc đồng ý cho
-   con tạo; học viên dưới 13 tuổi phải có ba mẹ tạo tài khoản cùng.
+   con tạo. **Với em dưới 13 tuổi:** GitHub yêu cầu người dùng từ 13
+   tuổi trở lên — ba mẹ tạo tài khoản cùng KHÔNG đủ. Con chỉ dùng GitHub
+   khi có đủ cả hai văn bản: (i) văn bản chấp thuận của trường/trung tâm;
+   (ii) phiếu đồng ý của phụ huynh. Thiếu một trong hai văn bản thì em
+   không dùng GitHub, giáo viên bố trí vai trò thay thế ngoài GitHub.
 2. Giáo viên đã tạo sẵn repo của nhóm trong Organization của lớp (xem
    phần 0, bước G0) và đưa đường link repo đó cho nhóm ở bước 0.
    **Con KHÔNG tự bấm Use this template tạo repo riêng** — repo tự
@@ -374,6 +397,11 @@ npx --yes wrangler d1 execute DB --remote --file migrations\seed.sql
 ```powershell
 npx --yes wrangler d1 execute DB --remote --command "DELETE FROM changelog WHERE tieu_de LIKE 'VÍ DỤ%';"
 ```
+
+> **Chỉ chạy seed một lần cho mỗi nhóm:** file `seed.sql` dùng
+> `INSERT OR IGNORE` — chỉ bỏ qua dòng đang tồn tại. Sau khi đã xóa 3
+> mục ví dụ ở trên, chạy lại seed sẽ chèn lại 3 mục ví dụ đó. Vì vậy
+> mỗi nhóm chỉ chạy seed một lần (ở bước G5); về sau không chạy lại.
 
 > Quirk cần biết khi test trên máy: `npx --yes wrangler d1 migrations apply DB
 > --local` và `npx --yes wrangler pages dev --d1` dùng hai file database local

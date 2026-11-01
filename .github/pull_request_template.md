@@ -1,22 +1,34 @@
-## Mô tả ngắn
+## Đã thay đổi gì
 
-[Việc này làm gì, thuộc thẻ việc nào?]
+- [Việc 1 — nói rõ file/phần nào, thay đổi ra sao]
+- [Việc 2]
+
+## Vì sao làm việc này
+
+[Liên hệ tới mục nào trong SPEC / mốc nào / lỗi nào trong phiếu kiểm thử]
+
+## Đã tự kiểm tra gì
+
+- [ ] Mở link preview và tự xem lại thay đổi
+- [ ] Kiểm tra trên điện thoại (nếu đụng tới giao diện)
+- [ ] Không sửa lan sang phần không liên quan
+- [ ] Không có khóa, mật khẩu, token hay thông tin cá nhân thật trong thay đổi này
+
+## Cần người duyệt chú ý
+
+[Chỗ nào mình chưa chắc, muốn reviewer xem kỹ — ghi "không có" nếu không]
+
+## Mục nhật ký (1 mục, theo AGENTS.md §4)
+
+[Soạn sẵn nội dung mục nhật ký để giáo viên đăng lên production sau khi merge — 1 mục bằng lời dễ hiểu cho phụ huynh, không dùng từ chuyên môn chưa giải nghĩa:]
+
+- Tiêu đề:
+- Mô tả (1–2 câu):
+- Nhãn (chọn đúng 1 trong 4): Giao diện / Tính năng mới / Sửa lỗi / Cải tiến
 
 ## Checklist trước khi xin review
 
-- [ ] Đã cập nhật SPEC (`docs/SPEC-TEMPLATE.md`) nếu phạm vi thay đổi.
-- [ ] Đường link preview mở được và tính năng dùng được trên cả điện thoại và máy tính.
-- [ ] Đã soạn nội dung mục nhật ký trong mô tả PR này (giáo viên đăng
-      sau khi merge): 1 mục bằng lời dễ hiểu cho phụ huynh (không dùng
-      từ chuyên môn chưa giải nghĩa), đúng 1 trong 4 nhãn: Giao diện /
-      Tính năng mới / Sửa lỗi / Cải tiến. Học sinh không tự ghi lên
-      production vì không giữ khóa giáo viên; nguồn duy nhất là
-      `AGENTS.md` mục 4: sau khi lên D1 không sửa file JSON nữa, tránh
-      hai nguồn lệch nhau.
-- [ ] Nếu đây là mục nhật ký thật đầu tiên, đã xóa 3 mục VÍ DỤ khỏi
-      D1/JSON (xem `docs/setup-windows.md` phần Stage 1/2).
-- [ ] Không có khóa, mật khẩu, token hay thông tin cá nhân thật trong PR này.
-- [ ] Đã gắn người review (giáo viên).
+- [ ] Đã cập nhật SPEC.md (ở gốc repo) nếu phạm vi thay đổi.
 
 ## Đường link preview
 
@@ -24,4 +36,4 @@
 
 ## Bằng chứng xong
 
-[Mục nhật ký đã thêm ngày nào? Tính năng kiểm chứng ra sao trên link thật?]
+[Tính năng kiểm chứng ra sao trên link thật? Mở được trên cả điện thoại và máy tính chưa?]

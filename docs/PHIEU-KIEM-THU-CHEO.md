@@ -2,8 +2,10 @@
 
 > Hai nhóm kiểm thử sản phẩm của nhau theo kịch bản in sẵn. Người kiểm
 > thử (RV của nhóm kiểm tra) ghi phiếu, ký tên, nộp vào `docs/checklists/`.
-> Phiếu ghi HIỆN TƯỢNG + BƯỚC TÁI HIỆN, không nhận xét cá nhân. Nhóm bị
-> phát hiện lỗi mà sửa tốt được đánh giá cao hơn nhóm giấu lỗi.
+> Lần nộp đầu tiên: nếu thư mục `docs/checklists/` chưa có trong repo
+> nhóm, tạo thư mục này rồi mới nộp phiếu vào đó. Phiếu ghi HIỆN TƯỢNG
+> + BƯỚC TÁI HIỆN, không nhận xét cá nhân. Nhóm bị phát hiện lỗi mà sửa
+> tốt được đánh giá cao hơn nhóm giấu lỗi.
 
 ## Thông tin chung
 

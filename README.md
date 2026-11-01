@@ -96,9 +96,12 @@ chứng từng stage và mức tốn hạn mức trong `docs/roadmap.md`):
    bảng `changelog` từ D1; `functions/api/health.js` báo database đã cấu
    hình chưa. Trang nhật ký tự gọi API trước, chỉ khi API không dùng được
    mới dùng file JSON. Tạo bảng bằng migration, không sửa tay trên Dashboard.
-   Ranh giới với bảng orders: file `schema.sql` là file giáo viên chạy
-   một lần cho bảng orders (HP1 buổi 8), mọi thay đổi bảng sau đó — kể
-   cả orders — đều qua migration mới.
+   Ranh giới với bảng orders: bảng `orders` đã có sẵn trong database
+   của nhóm từ trước khóa — giáo viên tạo bằng file migration
+   `migrations/0002_orders.sql` khi chuẩn bị trước khóa (xem giáo án
+   HP1 Phụ lục F.1). Ở HP1 buổi 8, học sinh chỉ đọc hiểu bảng này,
+   không chạy lại file tạo bảng. Mọi thay đổi bảng sau đó — kể cả
+   orders — đều qua file migration mới.
 3. **Stage 2 — ghi qua API có khóa giáo viên:** POST `/api/changelog`
    cần header `x-teacher-key` khớp secret `TEACHER_KEY` (đặt bằng
    `npx --yes wrangler pages secret put`, không viết vào repo). Đây là cổng giữ lớp
@@ -141,7 +144,9 @@ chứng từng stage và mức tốn hạn mức trong `docs/roadmap.md`):
    viên, học viên chỉ tập trên database local của máy mình.
 3. Đổi tên sản phẩm ở các chỗ sau (tên thật của SẢN PHẨM, không phải tên
    thật của con):
-   - `public/index.html`: dòng `<title>` và dòng `<h1>[Tên sản phẩm]</h1>`.
+   - `public/index.html`: dòng `<title>`, dòng `<h1>[Tên sản phẩm]</h1>`
+     và dòng `<meta name="description" ...>` (đổi `[Một câu ngắn gọn:
+     sản phẩm này giúp ai làm gì.]` thành một câu mô tả sản phẩm thật).
    - `public/nhat-ky.html`: dòng `<title>` (thay `[Tên sản phẩm]` bằng tên thật của sản phẩm).
    - `wrangler.toml`: dòng `name` **do giáo viên điền** tên project
      Pages thật của nhóm vào bản copy của repo nhóm — học viên không tự
