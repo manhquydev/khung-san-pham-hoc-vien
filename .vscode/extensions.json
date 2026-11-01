@@ -1,0 +1,9 @@
+{
+  // Chi 2 extension khoa hoc that su dung (docs/setup-windows.md Buoc 3, tuy chon):
+  // Prettier - tu format code cho gon; ESLint - bao loi JavaScript.
+  // VS Code se hoi con co cai khong khi mo repo, con tu chon cai hay khong.
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint"
+  ]
+}

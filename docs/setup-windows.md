@@ -43,14 +43,99 @@ bước G1–G5 dưới đây. **Học viên KHÔNG tự bấm Use this template
 repo riêng** — repo tự tạo sẽ không nối Pages, `wrangler.toml` còn
 TO-FILL, script kiểm tra sẽ FAIL, và nhóm sẽ có hai repo chồng nhau.
 
+**Khi tạo repo, chọn Visibility: Public** (không chọn Private).
+Lý do: ruleset bảo vệ nhánh `main` (bước G0b) chỉ dùng được miễn phí
+trên repo công khai khi Organization đang ở gói Free — repo riêng tư
+sẽ bị GitHub từ chối bật ruleset. Repo nhóm để công khai nghĩa là ai
+cũng xem/clone được code và lịch sử đóng góp của nhóm; phụ huynh đã
+được thông tin và đồng ý việc này trong Phiếu đồng ý (mục (a)) trước
+buổi 1. Repo mẫu `manhquydev/khung-san-pham-hoc-vien` vẫn giữ nguyên
+private — chỉ 2 repo nhóm học sinh mới để Public.
+
 ## Bước G0b — Bật ruleset bảo vệ nhánh `main` (trước khi học sinh clone)
 
 Ngay sau khi tạo repo nhóm (bước G0), giáo viên bật ruleset cho nhánh
-`main` trong repo nhóm (GitHub → Settings → Rules → Rulesets → New
-ruleset, áp cho nhánh `main`): chặn push thẳng lên `main`, bắt buộc mọi
-thay đổi đi qua PR và có review của giáo viên trước khi merge. Làm bước
-này TRƯỚC khi học sinh clone, để ngay từ buổi 1 repo nhóm đã có rào
-bảo vệ (xem KHUNG §4).
+`main` trong repo nhóm. Làm bước này TRƯỚC khi học sinh clone, để ngay
+từ buổi 1 repo nhóm đã có rào bảo vệ (xem KHUNG §4). Repo nhóm đã để
+Public ở bước G0 nên ruleset bật được miễn phí trên gói Free.
+
+**Cách 1 — làm bằng giao diện web (khuyên dùng):**
+
+1. Mở repo nhóm trên GitHub → **Settings** → **Rules** →
+   **Rulesets** → **New ruleset** → **New branch ruleset**.
+2. Đặt tên ruleset, ví dụ `bao-ve-main`. Mục **Enforcement status**
+   để **Active** (bật ngay).
+3. Mục **Target branches**: bấm **Add target** → chọn **Include
+   default branch** (hoặc gõ `main` nếu repo đã có nhánh `main`).
+4. Mục **Branch rules**, bật đúng 3 chốt sau:
+   - (1) **Chặn push thẳng lên `main`** và (2) **bắt buộc mọi thay
+     đổi đi qua Pull Request**: bật quy tắc **Require a pull request
+     before merging** — chỉ một quy tắc này đã chặn push thẳng lên
+     `main`, mọi thay đổi muốn vào `main` đều phải qua PR.
+   - (3) **Bắt buộc ít nhất 1 lượt duyệt của người khác**: trong cùng
+     quy tắc trên, đặt **Required approvals** = **1**. GitHub mặc
+     định không tính lượt duyệt của chính tác giả PR (tác giả không
+     tự duyệt được PR của mình), nên 1 lượt duyệt này bắt buộc phải
+     là của người khác — trong lớp là giáo viên (hoặc bạn cùng nhóm
+     được giáo viên cho duyệt).
+5. Bấm **Create** để lưu ruleset.
+
+**Cách 2 — làm bằng lệnh `gh api` (thay cho giao diện web):**
+
+Gửi POST tới endpoint `POST /repos/{owner}/{repo}/rulesets` (thay
+`{owner}` bằng `labmanhquy`, `{repo}` bằng tên repo nhóm), với các
+trường chính sau — đây là các trường đã đối chiếu tài liệu GitHub,
+không thêm trường nào chưa chắc:
+
+```json
+{
+  "name": "bao-ve-main",
+  "target": "branch",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": {
+      "include": ["refs/heads/main"],
+      "exclude": []
+    }
+  },
+  "rules": [
+    {
+      "type": "pull_request",
+      "parameters": {
+        "required_approving_review_count": 1
+      }
+    }
+  ]
+}
+```
+
+- `name`: tên ruleset. `target: "branch"` + `enforcement: "active"`:
+  ruleset áp cho nhánh và bật ngay.
+- `conditions.ref_name.include: ["refs/heads/main"]`: chỉ áp cho
+  nhánh `main`.
+- `rules` với `type: "pull_request"`: chặn push thẳng lên `main`,
+  bắt buộc mọi thay đổi qua PR (chốt 1 + 2); `parameters` với
+  `required_approving_review_count: 1`: bắt buộc ít nhất 1 lượt
+  duyệt — GitHub mặc định không tính lượt duyệt của chính tác giả PR
+  nên lượt này phải là của người khác (chốt 3).
+- Ví dụ lệnh (chạy trong PowerShell, đã đăng nhập `gh` bằng tài khoản
+  giáo viên; lưu nội dung JSON trên vào file `ruleset.json` trước):
+
+```powershell
+gh api repos/labmanhquy/<ten-repo-nhom>/rulesets --method POST --input ruleset.json
+```
+
+- **Kết quả đúng:** trả về JSON của ruleset vừa tạo (gồm `id`,
+  `name`, `enforcement: "active"`). Kiểm chứng lại bằng
+  `gh api repos/labmanhquy/<ten-repo-nhom>/rulesets` — phải trả về
+  HTTP 200 và thấy ruleset trong danh sách (trước đây trên repo
+  riêng tư, lệnh này trả 403).
+
+**Kiểm chứng rào đã chạy thật:** sau khi bật ruleset, thử push thẳng
+một commit lên `main` — GitHub phải từ chối. Nếu push thẳng vẫn lọt
+thì ruleset chưa bật đúng (kiểm tra lại Enforcement status có phải
+Active và Target có đúng nhánh `main` không) trước khi cho học sinh
+clone.
 
 ## Bước G1 — Tạo project Pages + database D1 của nhóm
 
@@ -248,12 +333,11 @@ cd <ten-repo>
 - **Nếu lỗi** (trang repo báo không tìm thấy, 404): giáo viên chưa mở
   repo của nhóm cho con — hỏi giáo viên, đừng tự tìm repo khác thay thế
   và đừng tự bấm Use this template tạo repo mới.
-- **Nếu lỗi** (hỏi username/password khi clone repo private): lần clone
-  đầu sẽ bật cửa sổ đăng nhập GitHub riêng — đăng nhập ở cửa sổ đó.
-  Không bao giờ gõ mật khẩu GitHub vào PowerShell. Đăng nhập trình duyệt
-  trước không tự đăng nhập cho git CLI. Nếu máy đã bật Git Credential
-  Manager thì cửa sổ đăng nhập là đường đi đúng; nếu không, dùng GitHub
-  Desktop để clone.
+- **Nếu lỗi** (hỏi username/password khi clone): repo nhóm để công khai
+  nên clone HTTPS không hỏi đăng nhập. Nếu máy vẫn hỏi, thường là do dán
+  nhầm đường link (link SSH thay vì HTTPS), copy lại đúng nút xanh
+  **Code → HTTPS** trên trang repo rồi clone lại. Không bao giờ gõ mật
+  khẩu GitHub vào PowerShell.
 
 ## Bước 5 — Chạy script kiểm tra môi trường
 

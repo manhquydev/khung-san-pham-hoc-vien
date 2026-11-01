@@ -1,0 +1,9 @@
+{
+  // Terminal mac dinh la PowerShell: moi lenh trong docs/setup-windows.md
+  // deu go trong PowerShell, duong dan dung dau \ (xem AGENTS.md muc 5).
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  // Luu file dang UTF-8 de tieng Viet khong loi font.
+  "files.encoding": "utf8",
+  // Thu le 2 khoang trang, khop code san co trong repo.
+  "editor.tabSize": 2
+}

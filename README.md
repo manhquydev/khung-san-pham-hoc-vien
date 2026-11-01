@@ -12,31 +12,103 @@ tra kết quả agent làm, và làm việc với nhóm theo đúng quy trình c
 
 ## Bắt đầu ở đây
 
-Làm theo đúng thứ tự này trong buổi đầu tiên.
+Làm theo đúng thứ tự này trong buổi đầu tiên. Buổi đầu chỉ có một việc
+khó là cài đặt — đã có script làm hộ, con chỉ cần gõ đúng từng lệnh
+dưới đây, đọc kết quả trên màn hình và trả lời khi script hỏi.
 
-### 1. Lấy repo của nhóm về máy
+Bản chi tiết từng bước (cài tay từng thứ, sửa từng lỗi): xem
+`docs/setup-windows.md`, phần Lần đầu, Stage 0.
 
-Giáo viên đã tạo sẵn repo của nhóm và đưa đường link cho bạn. Bạn chỉ
-cần clone theo link đó (xem `docs/setup-windows.md`, phần Lần đầu).
+### 1. Chạy script cài đặt lần đầu
 
-Bạn **không** tự bấm nút **Use this template** trên GitHub. Repo tự tạo
-sẽ không nối được với trang web của nhóm, và sẽ không chạy được.
-
-### 2. Chạy script kiểm tra máy
-
-Mở thư mục repo, chạy lệnh này trong PowerShell:
+Giáo viên đưa cho con 2 thứ: file `setup-lan-dau.ps1` và đường link
+repo của nhóm. Lưu file script vào thư mục Tài liệu (Documents) trên
+máy, rồi mở PowerShell và gõ 2 lệnh này:
 
 ```powershell
+cd $HOME\Documents
+powershell -ExecutionPolicy Bypass -File .\setup-lan-dau.ps1
+```
+
+- **Kết quả đúng sẽ thấy:** script in ra từng mục nó kiểm tra — Git,
+  Node.js, VS Code — kèm phiên bản tìm được trên máy con, rồi hỏi con
+  từng việc một (cài cái còn thiếu không, tên và email GitHub của con
+  là gì, link repo nhóm là gì).
+- **Lỗi thường gặp — "không nhận dạng được lệnh" hay "script bị chặn":**
+  con gõ thiếu cờ `-ExecutionPolicy Bypass` hoặc đang đứng sai thư mục.
+  Gõ `cd $HOME\Documents` lại rồi gõ đúng lệnh ở trên. Cờ
+  `-ExecutionPolicy Bypass` chỉ mở cửa cho đúng lần chạy này, không đổi
+  cài đặt máy.
+- **Lỗi thường gặp — script báo thiếu công cụ nhưng không tự cài:**
+  script chỉ cài khi con gõ `Y` đồng ý. Không gõ `Y` thì con tự cài tay
+  theo `docs/setup-windows.md` (Bước 1–3), rồi chạy lại script.
+
+Nếu con đã clone repo nhóm về máy trước rồi thì mở PowerShell ở ngay
+trong thư mục repo đó rồi chạy lệnh trên — script sẽ nhận ra repo có
+sẵn và bỏ qua bước clone.
+
+### 2. Trả lời khi script hỏi, rồi để script làm nốt
+
+Script hỏi gì thì trả lời đó, theo đúng thứ tự:
+
+1. **Thiếu công cụ nào thì gõ `Y` để cài.** Script in sẵn lệnh cài
+   (winget) trước khi hỏi — con thấy rõ nó sắp chạy lệnh gì. Cài xong,
+   nếu script dặn đóng rồi mở lại PowerShell thì làm đúng như vậy rồi
+   chạy lại script từ bước 1.
+2. **Gõ tên hiển thị và email tài khoản GitHub của con** để Git nhớ ai
+   là người làm (không có 2 dòng này thì tới commit đầu tiên Git sẽ
+   báo lỗi).
+3. **Dán đường link repo nhóm** giáo viên đã đưa (mở link repo, bấm
+   **Code**, copy link, dán vào PowerShell). Con không tự gõ lệnh
+   `git clone` — script clone giúp con.
+
+Xong 3 việc trên, script tự chạy `scripts\check-env.ps1` để kiểm tra
+lại toàn bộ máy.
+
+- **Kết quả đúng sẽ thấy:** các dòng `[PASS]` cho Git, Node.js, npm,
+  wrangler, File khung và D1 database_id.
+- **Lỗi thường gặp — clone báo không tìm thấy (404):** giáo viên chưa
+  mở repo của nhóm cho con — hỏi giáo viên, đừng tự tìm repo khác hay
+  tự bấm **Use this template** tạo repo mới.
+- **Lỗi thường gặp — hiện cửa sổ đăng nhập GitHub:** đăng nhập ở cửa
+  sổ đó. Không bao giờ gõ mật khẩu GitHub vào PowerShell.
+- **Lỗi thường gặp — Node.js báo bản cũ (dưới v20):** script sẽ hỏi
+  cài lại bản LTS mới — gõ `Y`.
+
+### 3. Nếu còn mục FAIL thì sửa rồi chạy lại bước kiểm tra
+
+Mục nào `[FAIL]` thì đọc ngay dòng "Cách sửa" bên dưới nó, sửa xong
+thì vào thư mục repo vừa clone và chạy lại lệnh kiểm tra cho tới khi
+toàn `[PASS]`:
+
+```powershell
+cd <tên-repo-vừa-clone>
 powershell -ExecutionPolicy Bypass -File scripts\check-env.ps1
 ```
 
-Script sẽ báo từng mục PASS hay FAIL, kèm cách sửa. Sửa xong thì chạy
-lại cho tới khi toàn PASS. Bạn không cần tạo tài khoản Cloudflare, không
-cần đăng nhập wrangler, không deploy bằng lệnh. Giáo viên đã nối sẵn repo
-với trang web của nhóm rồi: cứ merge vào nhánh `main` là website tự cập
-nhật.
+Thay `<tên-repo-vừa-clone>` bằng tên thư mục thật (là phần cuối của
+đường link repo, ví dụ `khung-nhom-1`). Chạy lệnh này phải đứng ở thư
+mục gốc của repo — nơi có file `wrangler.toml`. Nếu script báo "File
+khung FAIL" thì con đang đứng sai thư mục, gõ `cd` tới đúng thư mục
+repo rồi chạy lại.
 
-### 3. Điền thông tin nhóm (buổi 1)
+- **Lỗi thường gặp — "D1 database_id" FAIL (vẫn là TO-FILL):** giáo
+  viên chưa làm xong phần chuẩn bị — báo giáo viên, con **không** tự
+  tạo database hay tự điền id.
+- **Lỗi thường gặp — "Git identity" FAIL:** con chưa đặt tên/email ở
+  bước 2. Gõ 2 lệnh sau (thay bằng tên và email thật của con), rồi
+  chạy lại lệnh kiểm tra:
+
+```powershell
+git config --global user.name "Tên hiển thị của con"
+git config --global user.email "email tài khoản GitHub của con"
+```
+
+Con không cần tạo tài khoản Cloudflare, không cần đăng nhập wrangler,
+không deploy bằng lệnh. Giáo viên đã nối sẵn repo với trang web của
+nhóm rồi: cứ merge vào nhánh `main` là website tự cập nhật.
+
+### 4. Điền thông tin nhóm (buổi 1)
 
 Mở file `README-NHOM.md` và điền: tên nhóm, tên sản phẩm, thành viên
 cùng tài khoản GitHub, vai của từng bạn trong vòng đầu, ý tưởng sơ bộ
@@ -45,7 +117,7 @@ Pull Request như buổi 1 đã học. **Đừng ghi đè file `README.md` này
 bằng thông tin nhóm.** File này là tài liệu chung của cả khóa, giữ
 nguyên.
 
-### 4. Đổi tên sản phẩm
+### 5. Đổi tên sản phẩm
 
 Tên sản phẩm là tên của thứ nhóm bạn bán hoặc giới thiệu, không phải tên
 thật của bạn. Đổi ở 3 chỗ sau:
@@ -58,7 +130,7 @@ thật của bạn. Đổi ở 3 chỗ sau:
 - `wrangler.toml`: dòng `name` **do giáo viên điền** tên project thật
   của nhóm. Bạn không tự đổi dòng này.
 
-### 5. Nói với agent điều bạn muốn làm
+### 6. Nói với agent điều bạn muốn làm
 
 Không cần gõ lệnh gì đặc biệt. Cứ nói bằng lời thường, ví dụ:
 
