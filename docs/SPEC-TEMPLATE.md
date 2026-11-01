@@ -4,6 +4,7 @@
 
 - Tên sản phẩm:
 - Một câu mô tả (giúp ai làm việc gì):
+- Khi chốt tên và mô tả sản phẩm, điền luôn `public/data/project-info.json` theo AGENTS.md §10.
 
 ## 2. Người dùng
 

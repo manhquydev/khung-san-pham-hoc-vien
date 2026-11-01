@@ -37,3 +37,5 @@
 ## Bằng chứng xong
 
 [Tính năng kiểm chứng ra sao trên link thật? Mở được trên cả điện thoại và máy tính chưa?]
+
+- [ ] Project-info: đã cập nhật `public/data/project-info.json` (tên/mô tả/mốc M0–M3) nếu PR này đổi sản phẩm, hoặc ghi "không đổi" (xem AGENTS.md §10).

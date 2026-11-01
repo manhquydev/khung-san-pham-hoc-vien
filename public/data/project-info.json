@@ -1,0 +1,31 @@
+{
+  "description": "VÍ DỤ: website giới thiệu đồ handmade của nhóm, có danh mục sản phẩm, giỏ hàng thử và form đặt hàng thử.",
+  "description_en": "EXAMPLE: a website presenting the group's handmade products, with a product catalogue, a trial cart and a trial order form.",
+  "group_id": "nhom-1",
+  "milestones": {
+    "M0": {
+      "date": "2026-11-15",
+      "status": "done"
+    },
+    "M1": {
+      "date": "2026-11-22",
+      "status": "done"
+    },
+    "M2": {
+      "date": null,
+      "status": "in_progress"
+    },
+    "M3": {
+      "date": null,
+      "status": "todo"
+    }
+  },
+  "production_url": "https://khung-san-pham-hoc-vien.pages.dev",
+  "project_name": "VÍ DỤ — Tiệm đồ handmade",
+  "repo_url": "https://github.com/labmanhquy/nhom-1-vi-du",
+  "schema_version": 1,
+  "screenshot_updated_at": "2026-11-22",
+  "screenshot_url": "https://khung-san-pham-hoc-vien.pages.dev/screenshots/showcase.png",
+  "tagline": "VÍ DỤ: đồ handmade do nhóm tự làm, xem và đặt thử trên website.",
+  "updated_at": "2026-11-22"
+}

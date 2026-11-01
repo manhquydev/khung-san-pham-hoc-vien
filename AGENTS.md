@@ -155,3 +155,30 @@ lệnh nào, mở link nào, kiểm tra trên điện thoại ra sao, ai kiểm 
 [Nhóm ghi rõ agent phải báo cáo kết quả theo định dạng nào — ví dụ:
 đã làm gì / kiểm chứng ra sao / còn vướng gì — để cả nhóm đọc hiểu
 được mà không cần hỏi lại.]
+## 10. Project-info cho Showcase
+
+Project-info là 1 file `public/data/project-info.json` nói cho phụ huynh
+biết nhóm đang làm sản phẩm gì, tới mốc nào (M0–M3), xem thử ở đâu, ảnh
+chụp ra sao. Trang Showcase của lớp đọc file này để hiện thẻ dự án của nhóm.
+
+1. **Khi nào cập nhật project-info:** mỗi lần nhóm đạt 1 mốc (M0/M1/M2/M3)
+   hoặc đổi tên/mô tả dự án; cập nhật file project-info cùng PR với công
+   việc của mốc đó (không mở PR riêng chỉ để sửa file này, trừ khi chỉ sửa
+   mô tả).
+2. **Ai viết project-info:** học sinh viết nháp (agent hỗ trợ soạn câu cho
+   phụ huynh hiểu); **giáo viên duyệt bằng cách merge PR** — file
+   project-info chưa merge thì chưa hiện lên Showcase.
+3. **Luật viết project-info cho phụ huynh:** mô tả 1–2 câu, không dùng từ
+   chuyên môn chưa giải nghĩa (khớp §4: cấm "deploy", "refactor",
+   "responsive", "API"... mà không nói rõ nghĩa); không tên thật học sinh,
+   không ảnh học sinh, không số điện thoại, không email.
+4. **Ảnh chụp:** file `public/screenshots/showcase.png` (tối đa 2MB, PNG/JPG),
+   chụp từ trang chủ production; thay ảnh = commit file mới qua PR như code;
+   ghi `screenshot_updated_at` trong project-info = ngày chụp.
+5. **Cấm trong project-info:** không ghi key, token, mật khẩu vào file này;
+   không ghi link ngoài `production_url` / `repo_url` / `screenshot_url`
+   (không link mạng xã hội cá nhân).
+6. **Mốc M0–M3 trong project-info:** mỗi mốc chỉ có 3 trạng thái — `todo`
+   (chưa làm), `in_progress` (đang làm), `done` (đã xong); khi mốc xong thì
+   ghi `date` là ngày xong thật (dạng YYYY-MM-DD), chưa xong thì để `date`
+   là `null`. Đừng ghi ngày trong tương lai.
